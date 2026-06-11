@@ -1,0 +1,568 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* プレミアム・クラシック・ミニマルカラーパレット (ドラクエウォーク×白基調エディトリアル) */
+  --bg-primary: #faf9f6;       /* 柔らかく温かみのあるクラシックな漆喰ホワイト */
+  --bg-secondary: #f3f1eb;     /* 少しトーンを落とした上品なウォームグレー */
+  --bg-tertiary: #e7e4dc;      /* さらに落ち着いたトーン */
+  --bg-card: #ffffff;          /* 完全な白のカード背景 */
+  
+  --accent-gold: #c5a880;      /* 上品で落ち着いたシャンパンゴールド */
+  --accent-gold-hover: #b3956d;
+  --accent-blue: #1b2a4b;      /* 深みのあるノーブルなミッドナイトネイビー (モンスターA) */
+  --accent-blue-hover: #111b30;
+  --accent-red: #8e2430;       /* 気品溢れる深いバーガンディ / ボルドー (モンスターB / 状態異常) */
+  --accent-green: #2e4a3b;     /* 知的でクラシックなディープフォレストグリーン */
+  
+  --text-primary: #1a1a1a;     /* マットブラックに近い極めて濃いグレー */
+  --text-secondary: #222222;   /* 落ち着きのあるミディアムグレー */
+  --text-muted: #333333;       /* 控えめな極薄グレー */
+  
+  --border-color: rgba(197, 168, 128, 0.25); /* シャンパンゴールドをベースにした極薄ヘアライン */
+  --border-focus: rgba(27, 42, 75, 0.35);    /* ミッドナイトネイビーをベースにしたフォーカス線 */
+  --card-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.02); /* 軽やかでほぼ見えない上質なフラットシャドウ */
+  --glass-blur: blur(8px);
+  
+  --font-primary: 'Outfit', 'Noto Sans JP', sans-serif;
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+
+select, input, button, a, [role="button"], option {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f6f4ee; /* わずかに明度を下げ、コントラストを高める */
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(197, 168, 128, 0.20) 0%, transparent 48%),
+    radial-gradient(circle at 85% 85%, rgba(27, 42, 75, 0.14) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(197, 168, 128, 0.06) 0%, transparent 40%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* タイポグラフィ全体の統一感 (元のサンセリフ書体を使用) */
+h1, h2, h3, h4, th {
+  font-family: var(--font-primary);
+  letter-spacing: -0.02em;
+}
+
+
+/* モバイルファーストのメインコンテナ */
+.app-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 10px 12px 90px 12px;
+}
+
+/* スマホ用ヘッダー */
+.app-header {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  WebkitBackdropFilter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px; /* 少し丸みを持たせてモダンに */
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 6px 24px -6px rgba(27, 42, 75, 0.03);
+}
+
+.app-header h1 {
+  font-size: 1.28rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.app-header p {
+  display: none;
+}
+
+/* モバイルフレンドリーなエレガントパネル */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  WebkitBackdropFilter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px; /* 少し角を丸めてモダンなガラス板へ */
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 6px 24px -6px rgba(27, 42, 75, 0.03);
+  padding: 12px;
+  margin-bottom: 10px;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: visible; /* ドロップダウンポップオーバーがはみ出せるように visible にする */
+}
+
+/* スマホの親指操作に最適化したスティッキータブナビゲーション */
+.tab-container {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  WebkitBackdropFilter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 6px;
+  z-index: 100;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 6px 24px -6px rgba(27, 42, 75, 0.03);
+  scrollbar-width: none; /* Firefox用 */
+  mask-image: linear-gradient(to right, transparent, white 8px, white calc(100% - 8px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, white 8px, white calc(100% - 8px), transparent);
+}
+.tab-container::-webkit-scrollbar {
+  display: none; /* Safari/Chrome用 */
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  font-size: 0.93rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: var(--transition-smooth);
+  white-space: nowrap;
+  flex: 1 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+@media (hover: hover) {
+  .tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(197, 168, 128, 0.05);
+  }
+}
+
+.tab-btn.active {
+  color: var(--accent-gold);
+  background: rgba(197, 168, 128, 0.12);
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+/* スマホでタップしやすい入力欄 (最小高さ 42px) */
+.form-input, .form-select {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 4px;
+  font-family: var(--font-primary);
+  font-size: 0.97rem;
+  width: 100%;
+  outline: none;
+  -webkit-appearance: none; /* Removed transition for instant, simple behavior */
+}
+
+/* セレクトボックスの矢印カスタム (iOS対策) */
+select.form-select {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23c5a880' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+
+.form-input:focus, .form-select:focus,
+.form-input:active, .form-select:active {
+  border-color: var(--border-color) !important; /* Keep the same border color as default state */
+  background: #ffffff !important;
+  outline: none !important;
+  box-shadow: none !important; /* Absolutely no focus glow or changes */
+}
+
+/* タップしやすいボタン */
+.btn {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+@media (hover: hover) {
+  .btn:hover {
+    background: var(--bg-tertiary);
+  }
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--accent-gold);
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
+  font-weight: 600;
+}
+@media (hover: hover) {
+  .btn-primary:hover {
+    background: var(--accent-gold-hover);
+  }
+}
+
+/* タイトルヘッダー */
+h2 {
+  font-weight: 700;
+  font-size: 1.18rem;
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+/* ダッシュボードグリッド */
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* バッジ */
+.badge {
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.badge-gold {
+  background: rgba(197, 168, 128, 0.1);
+  color: var(--accent-gold);
+  border: 1px solid rgba(197, 168, 128, 0.25);
+}
+
+.badge-blue {
+  background: rgba(27, 42, 75, 0.08);
+  color: var(--accent-blue);
+  border: 1px solid rgba(27, 42, 75, 0.25);
+}
+
+/* トグルスイッチ */
+.switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--bg-tertiary);
+  transition: var(--transition-smooth);
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #ffffff;
+  transition: var(--transition-smooth);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+input:checked + .slider {
+  background-color: var(--accent-gold);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* スマホ用アコーディオン風デザイン */
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.collapsible-header:active {
+  opacity: 0.8;
+}
+
+.collapsible-content {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 8px;
+}
+
+/* モバイル向け 横スクロールテーブル */
+.table-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+}
+
+.table-scroll-container table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+/* 最初の列を固定する */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background: #ffffff !important;
+  z-index: 5;
+  border-right: 1px solid var(--border-color);
+  font-weight: 500;
+  text-align: left !important;
+  padding-left: 12px !important;
+}
+
+.table-scroll-container::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 20px;
+  pointer-events: none;
+  background: linear-gradient(to left, rgba(250, 249, 246, 0.6), transparent);
+}
+
+/* 高級感のあるフラットな外枠インディケータ */
+.glow-gold {
+  border: 1px solid var(--accent-gold) !important;
+}
+.glow-blue {
+  border: 1px solid var(--accent-blue) !important;
+}
+.glow-red {
+  border: 1px solid var(--accent-red) !important;
+}
+
+/* カスタムドロップダウンのスタイル */
+.custom-dropdown-trigger {
+  text-align: left;
+  user-select: none;
+  background-color: #ffffff;
+}
+
+@media (hover: hover) {
+  .custom-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    color: var(--accent-gold) !important;
+  }
+}
+.custom-dropdown-item:active {
+  background-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* 呼びステ等のレスポンシブ設計用ユーティリティ */
+.responsive-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.responsive-divider-right {
+  border-right: none;
+  padding-right: 0;
+  border-bottom: 1px solid rgba(197, 168, 128, 0.15);
+  padding-bottom: 14px;
+}
+
+@media (min-width: 480px) {
+  .responsive-grid-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .responsive-divider-right {
+    border-right: 1px solid rgba(197, 168, 128, 0.15);
+    padding-right: 12px;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+/* パネルの重ね順を上から下に向けて段階的に下げる（上のドロップダウンが下のパネルの上に必ず重なるようにする） */
+.dashboard-grid > .glass-panel {
+  position: relative;
+}
+.dashboard-grid > .glass-panel:nth-child(1) { z-index: 20; }
+.dashboard-grid > .glass-panel:nth-child(2) { z-index: 19; }
+.dashboard-grid > .glass-panel:nth-child(3) { z-index: 18; }
+.dashboard-grid > .glass-panel:nth-child(4) { z-index: 17; }
+.dashboard-grid > .glass-panel:nth-child(5) { z-index: 16; }
+.dashboard-grid > .glass-panel:nth-child(6) { z-index: 15; }
+
+/* スマホ表示向けのボトムナビゲーション調整 */
+@media (max-width: 768px) {
+  .tab-container {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
+    max-width: 680px !important;
+    border-radius: 16px 16px 0 0 !important; /* 上角だけ上品に丸める */
+    border-bottom: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 -8px 32px rgba(27, 42, 75, 0.08) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    WebkitBackdropFilter: blur(20px) !important;
+    z-index: 1000 !important;
+    padding: 6px !important;
+    gap: 4px !important;
+  }
+
+  /* ボトムナビゲーションが重なるため、全体のコンテナ下部に余白を追加 */
+  .app-container {
+    padding-bottom: 90px !important;
+  }
+
+  /* モバイル向けにのみ、邪魔にならない細めのスクロールバーを適用 */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(197, 168, 128, 0.3);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-gold);
+  }
+}
+
+/* 歩族フィルター セグメントラジオボタン */
+.step-family-selector {
+  display: flex;
+  background: var(--bg-secondary);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  overflow-x: auto;
+  gap: 2px;
+  scrollbar-width: none;
+}
+.step-family-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.step-family-option {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.step-family-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.step-family-option span {
+  display: block;
+  padding: 6px 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  transition: var(--transition-smooth);
+  user-select: none;
+}
+
+.step-family-option input[type="radio"]:checked + span {
+  background: #ffffff;
+  color: var(--accent-gold);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(27, 42, 75, 0.06);
+}
