@@ -92,11 +92,14 @@ ${battleKnowledge}`;
 
   return (
     <div className="fade-in">
-      <div className="tab-header" style={{ marginBottom: '20px' }}>
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="tab-header" style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
           ✨ AI (Gemma試運転)
           <span style={{ fontSize: '0.8rem', background: 'var(--accent-blue)', color: 'white', padding: '2px 8px', borderRadius: '12px' }}>Beta</span>
         </h2>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+          ⚠️ Gemmaは勉強中であり、間違えることがあります。
+        </p>
       </div>
 
       <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '480px', padding: '0' }}>
@@ -154,9 +157,9 @@ ${battleKnowledge}`;
               disabled={loading}
               style={{
                 flex: 1,
-                background: 'rgba(255,255,255,0.05)',
+                background: 'rgba(255,255,255,0.9)',
                 border: '1px solid rgba(255,255,255,0.2)',
-                color: 'white',
+                color: 'black',
                 padding: '12px 16px',
                 borderRadius: '8px',
                 fontSize: '1rem'
