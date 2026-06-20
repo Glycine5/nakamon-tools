@@ -1,6 +1,67 @@
 import React, { useState } from 'react';
 import { monsterMap } from '../data/monsters';
 import { battleKnowledge } from '../data/battleKnowledge';
+import { rawSkills } from '../data/skills';
+
+const abbreviationMap: Record<string, string> = {
+  'キラマ': 'キラーマシン',
+  'オシャン': 'オーシャンボーン',
+  'オーシャン': 'オーシャンボーン',
+  'スラジェネ': 'スライムジェネラル',
+  'ジェネラル': 'スライムジェネラル',
+  'ホブリ': 'ホークブリザード',
+  'りゅう': 'りゅうおう',
+  '竜王': 'りゅうおう',
+  'デスピ': 'デスピサロ',
+  'ワイト': 'ワイトキング',
+  'キラパン': 'キラーパンサー',
+  'ドラゴス': 'ドラゴスライム',
+  'シルデビ': 'シルバーデビル',
+  'よろきし': 'よろいのきし',
+  'スラナイ': 'スライムナイト',
+  'スカドラ': 'スカイドラゴン',
+  'バトレク': 'バトルレックス',
+  'キンスラ': 'キングスライム',
+  'ボンナイ': 'ボーンナイト',
+  'うご石': 'うごくせきぞう',
+  'まおつか': 'まおうのつかい',
+  'メイデン': 'メイデンドール',
+
+  'サイクロン': '灼熱サイクロン',
+  'ゴドスマ': 'ゴッドスマッシュ',
+  'テンペ': 'テンペストブロウ',
+  'デスク': 'デスクロー',
+  '冥王': '冥王の炎鎌',
+  '氷結': '氷結らんげき',
+  'ハッスル': 'ハッスルブレイク',
+  'ベホマ': 'ベホマラー',
+  'メイル': 'メイルストローム',
+
+  'おせ': 'おせっかい',
+  'いっぴき': 'いっぴきおおかみ',
+  'いぴ': 'いっぴきおおかみ',
+  'おおかみ': 'いっぴきおおかみ',
+  'ちから': 'ちからじまん',
+  'むっつり': 'むっつりすけべ',
+  'ずのう': 'ずのうめいせき',
+  'ぬけめ': 'ぬけめがない',
+};
+
+const getElementName = (idx: number) => {
+  switch (idx) {
+    case 11: return 'メラ';
+    case 12: return 'ギラ';
+    case 13: return 'イオ';
+    case 14: return 'ヒャド';
+    case 15: return 'バギ';
+    case 16: return 'ジバリア';
+    case 17: return 'デイン';
+    case 18: return 'ドルマ';
+    case 19: return '回復';
+    case 37: return 'ザバ';
+    default: return '無属性';
+  }
+};
 
 interface Message {
   role: 'user' | 'assistant';
@@ -24,9 +85,17 @@ export const GemmaChat: React.FC = () => {
     setLoading(true);
 
     try {
+      // 略称の展開を行って、コンテキストマッチングのヒット率を上げる
+      let searchInput = input;
+      Object.entries(abbreviationMap).forEach(([abbr, canonical]) => {
+        if (input.includes(abbr)) {
+          searchInput += ` ${canonical}`;
+        }
+      });
+
       // --- RAG: 文中に含まれるモンスターを検知してカンペを作成 ---
       let contextData = '';
-      const matchedMonsters = Object.keys(monsterMap).filter(name => input.includes(name));
+      const matchedMonsters = Object.keys(monsterMap).filter(name => searchInput.includes(name));
 
       if (matchedMonsters.length > 0) {
         contextData = '\n\n【参考データ（アプリ内最新ステータス）】\n';
@@ -46,7 +115,35 @@ export const GemmaChat: React.FC = () => {
         });
       }
 
+      // --- RAG: 文中に含まれるスキルを検知してカンペを作成 ---
+      let skillContext = '';
+      const matchedSkills = Object.values(rawSkills).filter(skill => searchInput.includes(skill.name));
+      if (matchedSkills.length > 0) {
+        skillContext = '\n\n【参考データ（スキル詳細仕様）】\n';
+        matchedSkills.forEach(s => {
+          if (!s.raw) return;
+          const mag = s.raw[0];
+          const isSpell = s.raw[5] === 1;
+          const isBreath = s.raw[5] === 2;
+          const isHeal = s.raw[5] === 3 || s.raw[5] === 4 || s.raw[6] === 19;
+          const mp = s.raw[7];
+          const element = getElementName(s.raw[6] as number);
+          
+          let typeStr = '';
+          if (isHeal) typeStr = '回復';
+          else if (isSpell) typeStr = '呪文';
+          else if (isBreath) typeStr = 'ブレス';
+          else typeStr = '物理/体技';
+
+          const targetStr = s.raw[4] === 2 || s.raw[4] === 4 ? '全体' : '単体';
+
+          skillContext += `- ${s.name}: カテゴリ ${typeStr}(${targetStr}), 消費MP ${mp}, 属性 ${element}, 基本威力/倍率 ${mag}${!isSpell && !isBreath && !isHeal ? '倍' : ''}\n`;
+        });
+      }
+
       const baseSystemPrompt = `あなたはドラゴンクエストウォークの「なかまモンスター（なかモン）」に特化した専門のアドバイザーです。ユーザーからの質問に対して、具体的かつゲームの仕様（性格によるステータス補正、耐性、スキルの特徴など）に基づいた的確なアドバイスを、親しみやすい口調で提供してください。
+提供された参考データや知識集に直接的な情報がない場合は、当て推量や嘘の数値（例: スキル倍率やステータス）を答えず、素直に「わかりません」または「その仕様データはありません」と答えてください。
+ユーザーはモンスター名やスキル名を略称（例: キラマ＝キラーマシン、オシャン＝オーシャンボーン、サイクロン＝灼熱サイクロン、ゴドスマ＝ゴッドスマッシュ等）で質問することがあります。その場合は、対応する正式名称のデータに基づいて適切に回答してください。
 
 以下のゲーム仕様を頭に入れて回答してください：
 ■ 概要
@@ -61,11 +158,11 @@ export const GemmaChat: React.FC = () => {
 全滅で敗北。10ターン終了時に決着がつかない場合は総ダメージ量が多い方の勝利となります。
 ■ スカウト
 倒した時のおよそ3割で仲間になります。
-卵には銀玉（7000歩で5000歩族以上）、金玉（13000歩で10000歩族以上）、魔王の卵（18000歩でカジノ魔王）、極み確定卵（30000歩でピックアップ極確定）などがあります。
+卵には銀のタマゴ（7000歩で5000歩族以上）、金のタマゴ（13000歩で10000歩族以上）、魔王のタマゴ（18000歩でカジノ魔王）、極み確定のタマゴ（30000歩でピックアップ極確定）などがあります。
 
 以下は詳細なバトル知識集です：
 ${battleKnowledge}`;
-      const finalSystemPrompt = baseSystemPrompt + contextData;
+      const finalSystemPrompt = baseSystemPrompt + contextData + skillContext;
 
       const response = await fetch('/api/gemma', {
         method: 'POST',
