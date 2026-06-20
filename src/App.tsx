@@ -20,28 +20,7 @@ const App: React.FC = () => {
     localStorage.setItem('dqw_activeTab', tab);
   };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'damedasu':
-        return <Damedasu />;
-      case 'darehaya':
-        return <Darehaya />;
-      case 'taisei':
-        return <TaiseiSearch />;
-      case 'gyakubiki':
-        return <Gyakubiki />;
-      case 'twopan':
-        return <TwoPan />;
-      case 'yobisute':
-        return <Yobisute />;
-      case 'tips':
-        return <Tips />;
-      case 'gemma':
-        return <GemmaChat />;
-      default:
-        return <Damedasu />;
-    }
-  };
+
 
   return (
     <div className="app-container">
@@ -117,7 +96,14 @@ const App: React.FC = () => {
 
       {/* メインコンテンツ */}
       <main style={{ minHeight: '500px' }}>
-        {renderContent()}
+        <div style={{ display: activeTab === 'damedasu' ? 'block' : 'none' }}><Damedasu /></div>
+        <div style={{ display: activeTab === 'darehaya' ? 'block' : 'none' }}><Darehaya /></div>
+        <div style={{ display: activeTab === 'taisei' ? 'block' : 'none' }}><TaiseiSearch /></div>
+        <div style={{ display: activeTab === 'gyakubiki' ? 'block' : 'none' }}><Gyakubiki /></div>
+        <div style={{ display: activeTab === 'twopan' ? 'block' : 'none' }}><TwoPan /></div>
+        <div style={{ display: activeTab === 'yobisute' ? 'block' : 'none' }}><Yobisute /></div>
+        <div style={{ display: activeTab === 'tips' ? 'block' : 'none' }}><Tips /></div>
+        <div style={{ display: activeTab === 'gemma' ? 'block' : 'none' }}><GemmaChat /></div>
       </main>
 
       {/* フッター */}
