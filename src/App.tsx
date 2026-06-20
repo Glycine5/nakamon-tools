@@ -111,7 +111,7 @@ const App: React.FC = () => {
           onClick={() => handleTabChange('gemma')}
         >
           <span>🤖</span>
-          <span>AI相談</span>
+          <span>Gemma(AI)</span>
         </button>
       </nav>
 
