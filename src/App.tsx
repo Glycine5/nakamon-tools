@@ -6,7 +6,7 @@ import { Gyakubiki } from './components/Gyakubiki';
 import { TwoPan } from './components/TwoPan';
 import { Yobisute } from './components/Yobisute';
 import { Tips } from './components/Tips';
-// import { GemmaChat } from './components/GemmaChat';
+import { GemmaChat } from './components/GemmaChat';
 
 type TabType = 'damedasu' | 'darehaya' | 'taisei' | 'gyakubiki' | 'twopan' | 'yobisute' | 'tips' | 'gemma';
 
@@ -36,8 +36,8 @@ const App: React.FC = () => {
         return <Yobisute />;
       case 'tips':
         return <Tips />;
-      // case 'gemma':
-      //   return <GemmaChat />;
+      case 'gemma':
+        return <GemmaChat />;
       default:
         return <Damedasu />;
     }
@@ -106,7 +106,6 @@ const App: React.FC = () => {
           <span>💡</span>
           <span>Tips</span>
         </button>
-        {/*
         <button 
           className={`tab-btn ${activeTab === 'gemma' ? 'active' : ''}`} 
           onClick={() => handleTabChange('gemma')}
@@ -114,7 +113,6 @@ const App: React.FC = () => {
           <span>🤖</span>
           <span>AI相談</span>
         </button>
-        */}
       </nav>
 
       {/* メインコンテンツ */}
