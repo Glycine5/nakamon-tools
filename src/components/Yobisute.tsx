@@ -238,7 +238,7 @@ export const Yobisute: React.FC = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1.0rem', textAlign: 'center' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                <th style={{ padding: '6px', textAlign: 'left' }}>ステータス</th>
+                <th style={{ padding: '6px', textAlign: 'left' }}></th>
                 <th style={{ padding: '6px', color: 'var(--accent-blue)' }}>
                   <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
                     <div>{mon1Qual}</div>
@@ -287,7 +287,7 @@ export const Yobisute: React.FC = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1.0rem', textAlign: 'center' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                <th style={{ padding: '6px', textAlign: 'left' }}>属性</th>
+                <th style={{ padding: '6px', textAlign: 'left' }}></th>
                 <th style={{ padding: '6px', color: 'var(--accent-blue)' }}>
                   <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
                     <div>{mon1Qual}</div>
@@ -331,7 +331,7 @@ export const Yobisute: React.FC = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.97rem', textAlign: 'center' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                <th style={{ padding: '6px', textAlign: 'left' }}>異常・低下項目</th>
+                <th style={{ padding: '6px', textAlign: 'left' }}></th>
                 <th style={{ padding: '6px', color: 'var(--accent-blue)' }}>
                   <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
                     <div>{mon1Qual}</div>
