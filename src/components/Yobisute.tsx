@@ -240,16 +240,18 @@ export const Yobisute: React.FC = () => {
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 <th style={{ padding: '6px', textAlign: 'left' }}>ステータス</th>
                 <th style={{ padding: '6px', color: 'var(--accent-blue)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginBottom: '2px' }}>
-                    {mon1Qual}・{mon1Pers}
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
+                    <div>{mon1Qual}</div>
+                    <div>{mon1Pers}</div>
                   </div>
-                  <div>{mon1Name}</div>
+                  <div style={{ marginTop: '2px' }}>{mon1Name}</div>
                 </th>
                 <th style={{ padding: '6px', color: 'var(--accent-red)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginBottom: '2px' }}>
-                    {mon2Qual}・{mon2Pers}
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
+                    <div>{mon2Qual}</div>
+                    <div>{mon2Pers}</div>
                   </div>
-                  <div>{mon2Name}</div>
+                  <div style={{ marginTop: '2px' }}>{mon2Name}</div>
                 </th>
               </tr>
             </thead>
@@ -257,7 +259,7 @@ export const Yobisute: React.FC = () => {
               {[
                 { name: '最大HP', key: 'hp' },
                 { name: '最大MP', key: 'mp' },
-                { name: 'こうげき力', key: 'power' },
+                { name: '攻撃力', key: 'power' },
                 { name: 'しゅび力', key: 'guard' },
                 { name: '攻撃魔力', key: 'magic' },
                 { name: '回復魔力', key: 'heal' },
@@ -287,16 +289,18 @@ export const Yobisute: React.FC = () => {
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 <th style={{ padding: '6px', textAlign: 'left' }}>属性</th>
                 <th style={{ padding: '6px', color: 'var(--accent-blue)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginBottom: '2px' }}>
-                    {mon1Qual}・{mon1Pers}
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
+                    <div>{mon1Qual}</div>
+                    <div>{mon1Pers}</div>
                   </div>
-                  <div>{mon1Name}</div>
+                  <div style={{ marginTop: '2px' }}>{mon1Name}</div>
                 </th>
                 <th style={{ padding: '6px', color: 'var(--accent-red)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginBottom: '2px' }}>
-                    {mon2Qual}・{mon2Pers}
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
+                    <div>{mon2Qual}</div>
+                    <div>{mon2Pers}</div>
                   </div>
-                  <div>{mon2Name}</div>
+                  <div style={{ marginTop: '2px' }}>{mon2Name}</div>
                 </th>
               </tr>
             </thead>
@@ -329,16 +333,18 @@ export const Yobisute: React.FC = () => {
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 <th style={{ padding: '6px', textAlign: 'left' }}>異常・低下項目</th>
                 <th style={{ padding: '6px', color: 'var(--accent-blue)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginBottom: '2px' }}>
-                    {mon1Qual}・{mon1Pers}
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
+                    <div>{mon1Qual}</div>
+                    <div>{mon1Pers}</div>
                   </div>
-                  <div>{mon1Name}</div>
+                  <div style={{ marginTop: '2px' }}>{mon1Name}</div>
                 </th>
                 <th style={{ padding: '6px', color: 'var(--accent-red)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginBottom: '2px' }}>
-                    {mon2Qual}・{mon2Pers}
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)', lineHeight: '1.2' }}>
+                    <div>{mon2Qual}</div>
+                    <div>{mon2Pers}</div>
                   </div>
-                  <div>{mon2Name}</div>
+                  <div style={{ marginTop: '2px' }}>{mon2Name}</div>
                 </th>
               </tr>
             </thead>
