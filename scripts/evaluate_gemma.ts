@@ -119,28 +119,119 @@ function buildSystemPrompt(input: string): string {
     });
   }
 
+  // ステータスランキング（攻撃力や素早さが高いモンスター）の検知と動的コンテキスト注入
+  let statContext = '';
+  const queryLower = searchInput.toLowerCase();
+  
+  const getTopMonstersByStat = (statKey: 'hp' | 'power' | 'guard' | 'speed' | 'magic' | 'heal', statLabel: string, count = 10) => {
+    const sorted = Object.values(monsterMap)
+      .filter(m => m.name !== 'デフォルト')
+      .sort((a, b) => b[statKey] - a[statKey])
+      .slice(0, count);
+    
+    let text = `\n【参考データ（${statLabel}が高いモンスターのトップ${count}ランキング）】\n`;
+    sorted.forEach((m, idx) => {
+      text += `${idx + 1}位. ${m.name}: ${statLabel} ${m[statKey]} (HP ${m.hp}, 攻撃力 ${m.power}, 守備力 ${m.guard}, すばやさ ${m.speed})\n`;
+    });
+    return text;
+  };
+
+  const isStatQuery = (keywords: string[]) => keywords.some(k => queryLower.includes(k));
+  const statKeywords = ['高い', '最高', '一番', '最大', '多い', 'ランキング', 'トップ', '順位', '最強', 'つよい', '強い'];
+  
+  if (statKeywords.some(k => queryLower.includes(k))) {
+    if (isStatQuery(['攻撃', 'ちから', '力', 'こうげき'])) {
+      statContext += getTopMonstersByStat('power', 'ちから(攻撃力)');
+    }
+    if (isStatQuery(['すばやさ', '素早さ', '速い', 'はやい', 'スピード'])) {
+      statContext += getTopMonstersByStat('speed', 'すばやさ');
+    }
+    if (isStatQuery(['hp', '体', 'ライフ', 'タフ'])) {
+      statContext += getTopMonstersByStat('hp', '最大HP');
+    }
+    if (isStatQuery(['守備', 'しゅび', '防御', 'かたい', '硬い'])) {
+      statContext += getTopMonstersByStat('guard', '守備力');
+    }
+    if (isStatQuery(['攻魔', 'こうま', '魔法', 'こうげきまりょく'])) {
+      statContext += getTopMonstersByStat('magic', '攻撃魔力');
+    }
+    if (isStatQuery(['回魔', 'かいま', '回復', 'かいふくまりょく'])) {
+      statContext += getTopMonstersByStat('heal', '回復魔力');
+    }
+  }
+
+  // 知識ベース(battleKnowledge)の動的フィルタリング (RAG)
+  let relevantKnowledge = '';
+  const sections = battleKnowledge.split(/(?=\n■ )/);
+  
+  // ヘッダー/イントロ部分の追加
+  const firstSection = sections[0];
+  if (!firstSection.trim().startsWith('■')) {
+    relevantKnowledge += firstSection;
+  }
+
+  sections.forEach(section => {
+    if (!section.trim().startsWith('■')) return;
+    
+    // セクションタイトルの抽出
+    const match = section.match(/■\s*([^\n]+)/);
+    if (!match) return;
+    const title = match[1];
+    const lowerTitle = title.toLowerCase();
+    
+    let matched = false;
+    
+    // タイトルがクエリに含まれるかチェック
+    if (queryLower.includes(lowerTitle)) {
+      matched = true;
+    }
+    
+    // セクション毎のキーワードマッピング
+    const sectionKeywords: Record<string, string[]> = {
+      'ゲーム概要': ['ルール', '時間', 'ターン', 'オート', '勝敗', '概要'],
+      '�  const baseSystemPrompt = `あなたはドラゴンクエストウォークの「なかまモンスター（なかモン）」に特化した専門のアドバイザーです。ユーザーからの質問に対して、具体的かつゲーム of 仕様（性格によるステータス補正、耐性、スキルの特徴など）に基づいた的確なアドバイスを、親しみやすい口調で提供してください。
+提供された参考データや知識集に直接的な情報がない（または推測も困難な）場合は、当て推量や嘘の数値（例: スキル倍率やステータス）を答えず、素直に「わかりません」または「その仕様データはありません」と答えてください。ただし、提供された参考データや知識集に類する表現がある場合は、言葉の揺れや文脈（例: 「×1000」→「1000倍」、「死亡している味方からランダム」→「死亡している味方」等）を柔軟に解釈して適切に回答してください。
+モンスターのステータス数値（HP、攻撃力/ちから、守備力、すばやさ等）や属性耐性、スキルの基本威力、消費MPなどの具体的な数値について質問された場合は、必ず提供された「参考データ」に記載されている正確な数値（例: 「キラーマシン: HP 1006, 攻撃力 619, 守備力 702, すばやさ 613」など）を最優先で、そのまま数字で回答してください。
+ユーザーはモンスター名やスキル名を略称（例: キラマ＝キラーマシン、オシャン＝オーシャンボーン、サイクロン＝灼熱サイクロン、ゴドスマ＝ゴッドスマッシュ等）で質問することがあります。その場合は、対応する正式名称のデータに基づいて適切に回答してください。`�フ', '攻撃'],
+      'スキル分類': ['スキル', '呪文', 'ブレス', '体技', '反射', '多段', '回復呪文', 'マホカンタ'],
+      '状態異常': ['異常', '麻痺', '眠り', '混乱', '魅了', '休み', '猛毒', '呪い', '封印', 'マヌーサ', 'まもりのたて'],
+      'バフ・デバフ': ['強化', '弱体', '上昇', '低下', 'ピオラ', 'バイシオン', 'スカラ', 'フバーハ', 'マホカンタ', '霧', '怒り'],
+      'いきなりスキル': ['いきなり', 'アームライオン', 'りゅうおう', 'ヘルクラウダー', 'ガチャコッコ', 'ジェネラル', 'テンタクルス', 'ジャミラス', 'バルボロス', 'ミイラ男', 'スカルゴン', 'ドルイド', 'グレイトマーマン', 'シャドー', 'ネルゲル'],
+      '回復AI': ['回復', '閾値', 'しきいち', 'ベホマラー', 'ハッスル', '一発解決'],
+      '特殊メカニクス': ['ジバリカ', 'ジバリーナ', '波動', '魅惑', '覚醒', '死亡'],
+      '行動順の決まり方': ['行動順', 'でんこうせっか', 'ピオラ', '乱数', '素早さ', '順番'],
+      '攻撃ターゲット': ['ターゲット', '標的', '狙う', '対象', 'おおあばれ', 'ランダム', 'ザオラル', 'ジバリア']
+    };
+    
+    for (const [key, keywords] of Object.entries(sectionKeywords)) {
+      if (lowerTitle.includes(key.toLowerCase()) && keywords.some(kw => queryLower.includes(kw.toLowerCase()))) {
+        matched = true;
+        break;
+      }
+    }
+    
+    if (matched) {
+      relevantKnowledge += '\n' + section.trim() + '\n';
+    }
+  });
+
+  // もし何もマッチしなかった場合は、基本ルールと概要だけを入れておく
+  if (relevantKnowledge.trim() === '===========================================================\nなかまモンスター 総合知識集\n（ローカルAI質問応答用）\n===========================================================') {
+    const defaultSections = sections.filter(s => s.includes('ゲーム概要') || s.includes('素質と性格'));
+    defaultSections.forEach(s => {
+      relevantKnowledge += '\n' + s.trim() + '\n';
+    });
+  }
+
   const baseSystemPrompt = `あなたはドラゴンクエストウォークの「なかまモンスター（なかモン）」に特化した専門のアドバイザーです。ユーザーからの質問に対して、具体的かつゲームの仕様（性格によるステータス補正、耐性、スキルの特徴など）に基づいた的確なアドバイスを、親しみやすい口調で提供してください。
 提供された参考データや知識集に直接的な情報がない場合は、当て推量や嘘の数値（例: スキル倍率やステータス）を答えず、素直に「わかりません」または「その仕様データはありません」と答えてください。
+モンスターのステータス数値（HP、攻撃力/ちから、守備力、すばやさ等）や属性耐性、スキルの基本威力、消費MPなどの具体的な数値について質問された場合は、必ず提供された「参考データ」に記載されている正確な数値（例: 「キラーマシン: HP 1006, 攻撃力 619, 守備力 702, すばやさ 613」など）を最優先で、そのまま数字で回答してください。
+ユーザーはモンスター名やスキル名を略称（例: キラマ＝キラーマシン、オシャン＝オーシャンボーン、サイクロン＝灼熱サイクロン、ゴドスマ＝ゴッドスマッシュ等）で質問することがあります。その場合は、対応する正式名称のデータに基づいて適切に回答してください。
 
 以下のゲーム仕様を頭に入れて回答してください：
-■ 概要
-なかまモンスターは最大4体のパーティを組み、フレンドやグランドマスターのパーティとオートバトルを楽しむコンテンツです。年2回モンスターグランプリが開催され、上位200人がグランドマスターの称号を得ます。
-■ 素質
-極（最もレア・ステータス最高）、超、特、優、並（ステータス最低）の5段階があります。
-■ 性格
-ぬけめがない（標準）、おせっかい、いっぴきおおかみ、ちからじまん、むっつりすけべ、きれもの、ずのうめいせき、おおぐらいの8つがあり、性格によって各ステータスに補正値が乗算されます。
-■ バトル
-ターン制オートバトルで、各ターンの開始時に「すばやさ×乱数」で行動順が決定します。
-スキル選択フローは：強化スキル（バフ）→弱化スキル（デバフ）→特殊スキル→全体攻撃→単体攻撃 の順で判定され、選択率は性格ごとに異なります。単体攻撃時に単体スキルが無い場合は通常攻撃になります。
-全滅で敗北。10ターン終了時に決着がつかない場合は総ダメージ量が多い方の勝利となります。
-■ スカウト
-倒した時のおよそ3割で仲間になります。
-卵には銀のタマゴ（7000歩で5000歩族以上）、金のタマゴ（13000歩で10000歩族以上）、魔王のタマゴ（18000歩でカジノ魔王）、極み確定のタマゴ（30000歩でピックアップ極確定）などがあります。
+${relevantKnowledge}`;
 
-以下は詳細なバトル知識集です：
-${battleKnowledge}`;
-
-  return baseSystemPrompt + contextData + skillContext;
+  return baseSystemPrompt + contextData + skillContext + statContext;
 }
 
 // テストケース
@@ -173,6 +264,26 @@ const testCases: TestCase[] = [
   {
     question: '存在しないスキル「デインズマ」の倍率は何倍？',
     expectedKeywords: ['わかりません', 'データはありません', '情報がありません', '不可能です', '含まれていません']
+  },
+  {
+    question: '一番攻撃力の高いモンスターは？',
+    expectedKeywords: ['ネルゲル', 'キラーパンサー', 'まおうのつかい']
+  },
+  {
+    question: '一番すばやさが高いモンスターは誰？',
+    expectedKeywords: ['キラーパンサー', 'ドラゴスライム']
+  },
+  {
+    question: 'でんこうせっかが発動すると、素早さは何倍になりますか？',
+    expectedKeywords: ['1000', '１０００']
+  },
+  {
+    question: '単体攻撃のターゲット選択で倒せる敵がいる場合、インデックスがどういう敵を選びますか？',
+    expectedKeywords: ['小さい', '先頭', 'インデックス']
+  },
+  {
+    question: 'ザオラルなどの蘇生スキルを使うとき、どの味方をターゲットにしますか？',
+    expectedKeywords: ['ランダム', '死亡']
   }
 ];
 
@@ -193,9 +304,13 @@ async function runTests() {
     });
     const matchedMonsters = Object.keys(monsterMap).filter(name => searchInput.includes(name));
     const matchedSkills = Object.values(rawSkills).filter(skill => searchInput.includes(skill.name));
-    console.log(`  🔍 診断: 検索文字列="${searchInput}" マッチモンスター=[${matchedMonsters.join(', ')}] マッチスキル=[${matchedSkills.map(s => s.name).join(', ')}]`);
-
     const systemPrompt = buildSystemPrompt(tc.question);
+    const matchedSections: string[] = [];
+    const sectionHeaders = systemPrompt.match(/■\s*[^\n]+/g) || [];
+    sectionHeaders.forEach(header => {
+      matchedSections.push(header.trim());
+    });
+    console.log(`  🔍 診断: 検索文字列="${searchInput}" マッチモンスター=[${matchedMonsters.join(', ')}] マッチスキル=[${matchedSkills.map(s => s.name).join(', ')}] マッチ知識=[${matchedSections.join(', ')}]`);
     
     try {
       const response = await fetch('https://nakamon-tools.pages.dev/api/gemma', {

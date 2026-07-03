@@ -141,8 +141,50 @@ export const GemmaChat: React.FC = () => {
         });
       }
 
+      // --- RAG: ステータスランキング（攻撃力や素早さが高いモンスター）の検知と動的コンテキスト注入 ---
+      let statContext = '';
+      const queryLower = searchInput.toLowerCase();
+      
+      const getTopMonstersByStat = (statKey: 'hp' | 'power' | 'guard' | 'speed' | 'magic' | 'heal', statLabel: string, count = 10) => {
+        const sorted = Object.values(monsterMap)
+          .filter(m => m.name !== 'デフォルト')
+          .sort((a, b) => b[statKey] - a[statKey])
+          .slice(0, count);
+        
+        let text = `\n【参考データ（${statLabel}が高いモンスターのトップ${count}ランキング）】\n`;
+        sorted.forEach((m, idx) => {
+          text += `${idx + 1}位. ${m.name}: ${statLabel} ${m[statKey]} (HP ${m.hp}, 攻撃力 ${m.power}, 守備力 ${m.guard}, すばやさ ${m.speed})\n`;
+        });
+        return text;
+      };
+
+      const isStatQuery = (keywords: string[]) => keywords.some(k => queryLower.includes(k));
+      const statKeywords = ['高い', '最高', '一番', '最大', '多い', 'ランキング', 'トップ', '順位', '最強', 'つよい', '強い'];
+      
+      if (statKeywords.some(k => queryLower.includes(k))) {
+        if (isStatQuery(['攻撃', 'ちから', '力', 'こうげき'])) {
+          statContext += getTopMonstersByStat('power', 'ちから(攻撃力)');
+        }
+        if (isStatQuery(['すばやさ', '素早さ', '速い', 'はやい', 'スピード'])) {
+          statContext += getTopMonstersByStat('speed', 'すばやさ');
+        }
+        if (isStatQuery(['hp', '体', 'ライフ', 'タフ'])) {
+          statContext += getTopMonstersByStat('hp', '最大HP');
+        }
+        if (isStatQuery(['守備', 'しゅび', '防御', 'かたい', '硬い'])) {
+          statContext += getTopMonstersByStat('guard', '守備力');
+        }
+        if (isStatQuery(['攻魔', 'こうま', '魔法', 'こうげきまりょく'])) {
+          statContext += getTopMonstersByStat('magic', '攻撃魔力');
+        }
+        if (isStatQuery(['回魔', 'かいま', '回復', 'かいふくまりょく'])) {
+          statContext += getTopMonstersByStat('heal', '回復魔力');
+        }
+      }
+
       const baseSystemPrompt = `あなたはドラゴンクエストウォークの「なかまモンスター（なかモン）」に特化した専門のアドバイザーです。ユーザーからの質問に対して、具体的かつゲームの仕様（性格によるステータス補正、耐性、スキルの特徴など）に基づいた的確なアドバイスを、親しみやすい口調で提供してください。
 提供された参考データや知識集に直接的な情報がない場合は、当て推量や嘘の数値（例: スキル倍率やステータス）を答えず、素直に「わかりません」または「その仕様データはありません」と答えてください。
+モンスターのステータス数値（HP、攻撃力/ちから、守備力、すばやさ等）や属性耐性、スキルの基本威力、消費MPなどの具体的な数値について質問された場合は、必ず提供された「参考データ」に記載されている正確な数値（例: 「キラーマシン: HP 1006, 攻撃力 619, 守備力 702, すばやさ 613」など）を最優先で、そのまま数字で回答してください。
 ユーザーはモンスター名やスキル名を略称（例: キラマ＝キラーマシン、オシャン＝オーシャンボーン、サイクロン＝灼熱サイクロン、ゴドスマ＝ゴッドスマッシュ等）で質問することがあります。その場合は、対応する正式名称のデータに基づいて適切に回答してください。
 
 以下のゲーム仕様を頭に入れて回答してください：
@@ -162,7 +204,7 @@ export const GemmaChat: React.FC = () => {
 
 以下は詳細なバトル知識集です：
 ${battleKnowledge}`;
-      const finalSystemPrompt = baseSystemPrompt + contextData + skillContext;
+      const finalSystemPrompt = baseSystemPrompt + contextData + skillContext + statContext;
 
       const response = await fetch('/api/gemma', {
         method: 'POST',
