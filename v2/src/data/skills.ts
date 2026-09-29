@@ -77,6 +77,7 @@ export const rawSkills: Record<string, Skill> = {
   hyouketu: { name: '氷結らんげき', raw: [3.0, 0, 0, 0, 1, 8, 14, 28] },
   hyouketu_ichi: { name: '氷結らんげきx1', raw: [0.75, 0, 0, 0, 1, 5, 14, 28] },
   ice_blast: { name: 'アイスブラスト', raw: [1.55, 'hukugou', 0, 0, 1, 6, 14, 28] },
+  danganr: { name: '弾岩流星群', raw: [1.80, 'hukugou', 0, 0, 1, 6, 16, 28] },
   hagekiri: { name: 'はげしく斬りつける', raw: [3, 0, 0, 0, 1, 8, 10, 28] },
   hagekiri_ichi: { name: 'はげしく斬りつけるx1', raw: [0.75, 0, 0, 0, 1, 5, 10, 28] },
   asubureiku: { name: 'アースブレイク', raw: [2.6, 0, 0, 0, 1, 6, 16, 28] },
@@ -164,7 +165,7 @@ export const rawSkills: Record<string, Skill> = {
 // リスト類
 export const monsterList: string[] = [
   'キラーマシン', 'ヘルバトラー', 'オーシャンボーン', 'スライムジェネラル','ホークブリザード','ホークブリザード49',
-  'りゅうおう','デスピサロ','バルボロス', 'デスタムーア','グレイナル','ネルゲル', 'ハーゴン','オルゴデミーラ', 'やかんのまじん',
+  'りゅうおう','デスピサロ','バルボロス', 'デスタムーア','グレイナル','ネルゲル', 'ハーゴン','オルゴデミーラ', 'ラプソーン', 'やかんのまじん',
   'ギガンテス','まおうのつかい','メイデンドール','メイデンドール49', 'ヘルバオム', 'ジュリアンテ','わかめおうじ','うごくせきぞう','きとうし','アームライオン','ジャミラス',
   'バトルレックス', 'キングスライム','ボーンナイト','スカイドラゴン',
   'シャドーサタン','ヘルクラウダー','テンタクルス','グレイトマーマン',
@@ -199,7 +200,7 @@ export const skillZenList: string[] = [
 export const skillTanList: string[] = [
   '単体物理','クリムゾンバード', 'ギガソード', 'デスクロー','冥王の炎鎌','冥王(直撃)',
   'デスクx1', 'テンペストブロウ', 'テンペx1', 'ゴッドスマッシュ',
-  '氷結らんげき', '氷結x1', 'アイスブラスト', 'はげしく斬りつける', 'はげ斬x1', 'アースブレイク', 'ハッスルブレイク',
+  '氷結らんげき', '氷結x1', 'アイスブラスト', '弾岩流星群', 'はげしく斬りつける', 'はげ斬x1', 'アースブレイク', 'ハッスルブレイク',
   'ヒートスライサー', '大地の一撃', '漆黒の爪', '漆黒x1', 'タイガークロー','魔瘴弾',
   'タイガx1', 'レボルスラ', 'タックル', 'シールドブ', 'ヒールファ',
   '大暴れx1', '雷光x1', '鳴動x1', 'せいけんづ', 'しんくう斬','Wアタック','Wアタx1',
@@ -288,6 +289,7 @@ export function getTanPhysicalSkill(text: string, enemyFamily: number): { skill:
     case '氷結らんげ': case '氷結らんげき': skillKey = 'hyouketu'; break;
     case '氷結x1': skillKey = 'hyouketu_ichi'; break;
     case 'アイスブラ': case 'アイスブラスト': skillKey = 'ice_blast'; break;
+    case '弾岩流星': case '弾岩流星群': case '弾丸流星': case '弾丸流星群': skillKey = 'danganr'; break;
     case 'はげ斬り': case 'はげしく斬りつける': skillKey = 'hagekiri'; break;
     case 'はげ斬x1': skillKey = 'hagekiri_ichi'; break;
     case 'アースブレ': case 'アースブレイク': skillKey = 'asubureiku'; break;
