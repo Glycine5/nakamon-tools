@@ -1180,7 +1180,7 @@ export const TwoPan: React.FC = () => {
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>属性耐性%</label>
                   <Dropdown 
-                    options={['0', '3(D)', '6(C)', '9', '10(B)', '12', '13', '14(A)', '16', '20(S)', '23', '24', '26', '27', '29', '30', '32', '33', '34', '36', '37', '38', '40', '43', '44', '46', '48', '50', '54', '60']} 
+                    options={['0', '3(D)', '5(C)', '6', '7(B)', '9', '10(A)', '12', '13', '14(S)', '16', '20', '23', '24', '26', '27', '29', '30', '32', '33', '34', '36', '37', '38', '40', '43', '44', '46', '48', '50', '54', '60']} 
                     value={defZokuseiTai} 
                     onChange={setDefZokuseiTai} 
                   />
