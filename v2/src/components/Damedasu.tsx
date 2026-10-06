@@ -873,7 +873,7 @@ export const Damedasu: React.FC = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>属性耐性%</label>
-                        <Dropdown options={['0', '3(D)', '5(C)', '6', '7(B)', '9', '10(A)', '12', '13', '14(S)', '16', '20', '23', '24', '26', '27', '29', '30', '32', '33', '34', '36', '37', '38', '40', '43', '44', '46', '48', '50', '54', '60']} value={defZokuseiTai} onChange={setDefZokuseiTai} />
+                        <Dropdown options={['0', '3', '4(D)', '5', '6', '7', '8(C)', '9', '10', '12', '13(B)', '14', '16', '20(A)', '23', '24', '26', '27', '29', '30(S)', '32', '33', '34', '36', '37', '38', '40', '43', '44', '46', '48', '50', '54', '60']} value={defZokuseiTai} onChange={setDefZokuseiTai} />
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>系統耐性%</label>
