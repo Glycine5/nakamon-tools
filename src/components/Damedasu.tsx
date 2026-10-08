@@ -842,7 +842,7 @@ export const Damedasu: React.FC = () => {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <div style={{ flex: 1 }}>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>しゅび力</label>
-                        <Dropdown options={['0', '4(D)', '8(C)', '12', '13(B)', '17', '20(A)', '21', '24', '26', '28', '30(S)', '33', '34', '35', '38', '39', '40', '43', '45', '48', '50', '53', '58', '60', '63','64','68', '70', '73', '80', '90', '93', '94', '98', '100', '103', '110', '120']} value={defSyubi} onChange={setDefSyubi} />
+                        <Dropdown options={['0', '4', '7(D)', '8', '12', '13', '15(C)', '17', '20', '21', '24', '25(B)', '26', '28', '30', '33', '34', '35(A)', '38', '39', '40', '43', '45', '48', '50(S)', '53', '58', '60', '63', '64', '68', '70', '73', '80', '90', '93', '94', '98', '100', '103', '110', '120']} value={defSyubi} onChange={setDefSyubi} />
                       </div>
                       <div style={{ flex: 1 }}>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>スカラ</label>

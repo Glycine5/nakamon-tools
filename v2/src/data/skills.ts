@@ -159,13 +159,15 @@ export const rawSkills: Record<string, Skill> = {
   dengeki: { name: 'でんげき', raw: [1.1, 0, 0, 0, 3, 5, 17, 40] },
   kaitentataki: { name: '回転たたき', raw: [0.8, 0, 0, 0, 3, 5, 10, 0] },
   hagesiiotakebi: { name: 'はげしいおたけび', raw: [0.9, 0, 0, 0, 4, 5, 10, 0] },
-  bital_impact: { name: 'バイタルインパクト', raw: [1.2, 'koukai', 0, 0, 2, 7, 10, 40] }
+  bital_impact: { name: 'バイタルインパクト', raw: [1.2, 'koukai', 0, 0, 2, 7, 10, 40] },
+  shin_ganseki: { name: '新・岩石おとし', raw: [0.9, 'hukugou', 0, 0, 2, 7, 16, 40] },
+  reppugake: { name: '烈風駆け', raw: [1.5, 0, 0, 0, 2, 7, 15, 40] }
 };
 
 // リスト類
 export const monsterList: string[] = [
   'キラーマシン', 'ヘルバトラー', 'オーシャンボーン', 'スライムジェネラル','ホークブリザード','ホークブリザード49',
-  'りゅうおう','デスピサロ','バルボロス', 'デスタムーア','グレイナル','ネルゲル', 'ハーゴン','オルゴデミーラ', 'ラプソーン', 'やかんのまじん',
+  'りゅうおう','デスピサロ','バルボロス', 'デスタムーア','グレイナル','ネルゲル', 'ハーゴン','オルゴデミーラ', 'ラプソーン', 'レジェンドホース', 'アラグネ', 'やかんのまじん',
   'ギガンテス','まおうのつかい','メイデンドール','メイデンドール49', 'ヘルバオム', 'ジュリアンテ','わかめおうじ','うごくせきぞう','きとうし','アームライオン','ジャミラス',
   'バトルレックス', 'キングスライム','ボーンナイト','スカイドラゴン',
   'シャドーサタン','ヘルクラウダー','テンタクルス','グレイトマーマン',
@@ -189,7 +191,7 @@ export const monsterList: string[] = [
 export const skillZenList: string[] = [
   '全体物理', '灼熱サイクロン', '死神の一撃', 'セイントインパクト',
   'ヒートインフェルノ', 'ランドインパクト', 'メイルストローム', 'キングプレス',
-  'フローズンウィップ', 'バイタルインパクト',
+  'フローズンウィップ', 'バイタルインパクト', '新・岩石おとし', '烈風駆け',
   '閃烈回転斬り', '氷岩おとし', 'プラズマウ', 'リーフスラ',
   '岩石おとし', '光爆なぎ', '灼熱なぎ', 'キングダム',
   'ぶんまわし', 'いなずま', 'しんくうは', 'アーススイ',
@@ -269,6 +271,8 @@ export function getZenPhysicalSkill(text: string, enemyFamily: number): { skill:
     case '回転たたき': skillKey = 'kaitentataki'; break;
     case 'はげしいお': skillKey = 'hagesiiotakebi'; break;
     case 'バイタルイ': case 'バイタルインパクト': skillKey = 'bital_impact'; break;
+    case '新・岩石': case '新・岩石おとし': case '新・岩石落とし': skillKey = 'shin_ganseki'; break;
+    case '烈風': case '烈風駆け': skillKey = 'reppugake'; break;
     default: skillKey = 'none';
   }
   return { skill: rawSkills[skillKey] || rawSkills.none, label: text };
