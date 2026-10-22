@@ -9,8 +9,7 @@ import {
   getZenPhysicalSkill,
   getTanPhysicalSkill,
   getJumonSkill,
-  getBreathSkill,
-  getMonsterStepFamily
+  getBreathSkill
 } from '../data/skills';
 import { personalities, qualifications } from '../data/constants';
 import { calcMonsterStatus, calcPhysicalDamage, calcJumonBreathDamage } from '../utils/calculator';
@@ -19,7 +18,28 @@ import { Dropdown } from './Dropdown';
 import { savePreset } from '../utils/presetManager';
 import { PresetModal } from './PresetModal';
 
+// 各モンスターの所属する歩族を判定する関数
+const getMonsterStepFamily = (name: string): string => {
+  const idx = monsterList.indexOf(name);
+  if (idx === -1) return 'その他';
 
+  const idxKillerMachine = monsterList.indexOf('キラーマシン');
+  const idxMaou = monsterList.indexOf('まおうのつかい');
+  const idxMaiden = monsterList.indexOf('メイデンドール');
+  const idxWight = monsterList.indexOf('ワイトキング');
+  const idxDashlan = monsterList.indexOf('ダッシュラン');
+  const idxHellCondor = monsterList.indexOf('ヘルコンドル');
+
+  if (idxKillerMachine !== -1 && idxMaou !== -1 && idx >= idxKillerMachine && idx <= idxMaou) {
+    return '18k';
+  } else if (idxMaiden !== -1 && idxWight !== -1 && idx >= idxMaiden && idx <= idxWight) {
+    return '13k';
+  } else if (idxDashlan !== -1 && idxHellCondor !== -1 && idx >= idxDashlan && idx <= idxHellCondor) {
+    return '10k';
+  } else {
+    return 'その他';
+  }
+};
 
 export const TwoPan: React.FC = () => {
   const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
@@ -77,11 +97,22 @@ export const TwoPan: React.FC = () => {
   const [defSkalaText, setDefSkalaText] = useState<string>(() => localStorage.getItem('dqw_two_defSkalaText') || '0');
   const [defAdditionalHPText, setDefAdditionalHPText] = useState<string>(() => localStorage.getItem('dqw_two_defAdditionalHPText') || '0'); // 継承玉等による追加HP (オリジナル選択肢)
   const [defSyubi, setDefSyubi] = useState<string>(() => localStorage.getItem('dqw_two_defSyubi') || '0');
-  const [defZokuseiTai, setDefZokuseiTai] = useState<string>(() => localStorage.getItem('dqw_two_defZokuseiTai') || '0');
-  const [defKeitouTai, setDefKeitouTai] = useState<string>(() => localStorage.getItem('dqw_two_defKeitouTai') || '0');
-  const [defZantai, setDefZantai] = useState<string>(() => localStorage.getItem('dqw_two_defZantai') || '0');
-  const [defJumon, setDefJumon] = useState<string>(() => localStorage.getItem('dqw_two_defJumon') || '0');
-  const [defBreath, setDefBreath] = useState<string>(() => localStorage.getItem('dqw_two_defBreath') || '0');
+  // 敵側フォース (main.py: force_two_2)。ドルマならドルマ属性攻撃を 0.8 倍
+  const [defForce, setDefForce] = useState<string>(() => localStorage.getItem('dqw_two_defForce') || '-');
+  // 耐性系はアタッカーごとに個別設定 (main.py: *_two がA用, *_two_3 がB用)
+  // 旧バージョンの共通キー (dqw_two_defZokuseiTai 等) があれば初期値として引き継ぐ
+  const loadTai = (key: string, suffix: 'A' | 'B') =>
+    localStorage.getItem(`dqw_two_${key}${suffix}`) || localStorage.getItem(`dqw_two_${key}`) || '0';
+  const [defZokuseiTaiA, setDefZokuseiTaiA] = useState<string>(() => loadTai('defZokuseiTai', 'A'));
+  const [defKeitouTaiA, setDefKeitouTaiA] = useState<string>(() => loadTai('defKeitouTai', 'A'));
+  const [defZantaiA, setDefZantaiA] = useState<string>(() => loadTai('defZantai', 'A'));
+  const [defJumonA, setDefJumonA] = useState<string>(() => loadTai('defJumon', 'A'));
+  const [defBreathA, setDefBreathA] = useState<string>(() => loadTai('defBreath', 'A'));
+  const [defZokuseiTaiB, setDefZokuseiTaiB] = useState<string>(() => loadTai('defZokuseiTai', 'B'));
+  const [defKeitouTaiB, setDefKeitouTaiB] = useState<string>(() => loadTai('defKeitouTai', 'B'));
+  const [defZantaiB, setDefZantaiB] = useState<string>(() => loadTai('defZantai', 'B'));
+  const [defJumonB, setDefJumonB] = useState<string>(() => loadTai('defJumon', 'B'));
+  const [defBreathB, setDefBreathB] = useState<string>(() => loadTai('defBreath', 'B'));
 
   // --- 歩数フィルター状態 ---
   const [atkAStepFilter, setAtkAStepFilter] = useState<string>('18k');
@@ -179,15 +210,23 @@ export const TwoPan: React.FC = () => {
     localStorage.setItem('dqw_two_defSkalaText', defSkalaText);
     localStorage.setItem('dqw_two_defAdditionalHPText', defAdditionalHPText);
     localStorage.setItem('dqw_two_defSyubi', defSyubi);
-    localStorage.setItem('dqw_two_defZokuseiTai', defZokuseiTai);
-    localStorage.setItem('dqw_two_defKeitouTai', defKeitouTai);
-    localStorage.setItem('dqw_two_defZantai', defZantai);
-    localStorage.setItem('dqw_two_defJumon', defJumon);
-    localStorage.setItem('dqw_two_defBreath', defBreath);
+    localStorage.setItem('dqw_two_defForce', defForce);
+    localStorage.setItem('dqw_two_defZokuseiTaiA', defZokuseiTaiA);
+    localStorage.setItem('dqw_two_defKeitouTaiA', defKeitouTaiA);
+    localStorage.setItem('dqw_two_defZantaiA', defZantaiA);
+    localStorage.setItem('dqw_two_defJumonA', defJumonA);
+    localStorage.setItem('dqw_two_defBreathA', defBreathA);
+    localStorage.setItem('dqw_two_defZokuseiTaiB', defZokuseiTaiB);
+    localStorage.setItem('dqw_two_defKeitouTaiB', defKeitouTaiB);
+    localStorage.setItem('dqw_two_defZantaiB', defZantaiB);
+    localStorage.setItem('dqw_two_defJumonB', defJumonB);
+    localStorage.setItem('dqw_two_defBreathB', defBreathB);
   }, [
     atkAName, atkAPers, atkAQual, atkASkillType, atkASkillName, atkABaiki, atkAForce, atkAKougeki, atkAKouma, atkAKiyousa, atkAZokusei, atkAZokuzen, atkAKeitou, atkAKouryu, atkABousou,
     atkBName, atkBPers, atkBQual, atkBSkillType, atkBSkillName, atkBBaiki, atkBForce, atkBKougeki, atkBKouma, atkBKiyousa, atkBZokusei, atkBZokuzen, atkBKeitou, atkBKouryu, atkBBousou,
-    defName, defPers, defQual, defSkalaText, defAdditionalHPText, defSyubi, defZokuseiTai, defKeitouTai, defZantai, defJumon, defBreath
+    defName, defPers, defQual, defSkalaText, defAdditionalHPText, defSyubi, defForce,
+    defZokuseiTaiA, defKeitouTaiA, defZantaiA, defJumonA, defBreathA,
+    defZokuseiTaiB, defKeitouTaiB, defZantaiB, defJumonB, defBreathB
   ]);
 
   // ヘルパー: オリジナル Spinner 文字列から数値部分を抽出
@@ -242,11 +281,21 @@ export const TwoPan: React.FC = () => {
   // --- 補正値のパース ---
   const syubiHosei = parseSelectVal(defSyubi);
   const skalaHosei = parseSelectVal(defSkalaText);
-  const zokuseiTaiHosei = parseSelectVal(defZokuseiTai);
-  const keitouTaiHosei = parseSelectVal(defKeitouTai);
-  const zantaiTaiHosei = parseSelectVal(defZantai);
-  const jumonTaiHosei = parseSelectVal(defJumon);
-  const breathTaiHosei = parseSelectVal(defBreath);
+  type TaiHosei = { zokusei: number; keitou: number; zantai: number; jumon: number; breath: number };
+  const taiA: TaiHosei = {
+    zokusei: parseSelectVal(defZokuseiTaiA),
+    keitou: parseSelectVal(defKeitouTaiA),
+    zantai: parseSelectVal(defZantaiA),
+    jumon: parseSelectVal(defJumonA),
+    breath: parseSelectVal(defBreathA),
+  };
+  const taiB: TaiHosei = {
+    zokusei: parseSelectVal(defZokuseiTaiB),
+    keitou: parseSelectVal(defKeitouTaiB),
+    zantai: parseSelectVal(defZantaiB),
+    jumon: parseSelectVal(defJumonB),
+    breath: parseSelectVal(defBreathB),
+  };
 
   // --- ダメージ算出関数 ---
   const calculateDamageForAttacker = (
@@ -262,8 +311,14 @@ export const TwoPan: React.FC = () => {
     kouryuMag: number,
     force: string,
     kiyousaHosei: number,
-    isBousou: boolean
+    isBousou: boolean,
+    tai: TaiHosei
   ) => {
+    const zokuseiTaiHosei = tai.zokusei;
+    const keitouTaiHosei = tai.keitou;
+    const zantaiTaiHosei = tai.zantai;
+    const jumonTaiHosei = tai.jumon;
+    const breathTaiHosei = tai.breath;
     let min = 0, avg = 0, max = 0;
 
     if (skillType === 'physical_zen' || skillType === 'physical_tan') {
@@ -272,9 +327,15 @@ export const TwoPan: React.FC = () => {
         ? getZenPhysicalSkill(skillName, defStatus.family) 
         : getTanPhysicalSkill(skillName, defStatus.family);
       
-      const zokusei = force === 'ドルマ' && skillData.skill.raw[6] === 10 ? 18 : (skillData.skill.raw[6] as number);
+      // アタッカー側ドルマフォース: 無属性(10)の物理をドルマ属性(18)にする
+      // フォースでドルマ化した場合のみ属性補正・属性全補正は半分（元々ドルマ属性のスキルはそのまま）
+      const isForceDolma = force === 'ドルマ' && skillData.skill.raw[6] === 10;
+      const zokusei = isForceDolma ? 18 : (skillData.skill.raw[6] as number);
+      const physZokuseiHosei = isForceDolma ? zokuseiHosei / 2 : zokuseiHosei;
+      const physZokuzenHosei = isForceDolma ? zokuzenHosei / 2 : zokuzenHosei;
       const resist = defStatus.raw ? (defStatus.raw[zokusei] as number) : 1;
-      const addMag = force === 'ドルマ' && zokusei === 18 ? 0.8 : 1;
+      // 敵側ドルマフォース: ドルマ属性攻撃を 0.8 倍
+      const addMag = defForce === 'ドルマ' && zokusei === 18 ? 0.8 : 1;
       
       let finalPower = status.power;
       if (skillData.skill.raw[1] === 'hukugou') {
@@ -295,8 +356,8 @@ export const TwoPan: React.FC = () => {
         zokusei_tai_hosei: zokuseiTaiHosei,
         zantaitai_hosei: zantaiTaiHosei,
         keitou_tai_hosei: keitouTaiHosei,
-        zokusei_hosei: zokuseiHosei,
-        zokuzen_hosei: zokuzenHosei,
+        zokusei_hosei: physZokuseiHosei,
+        zokuzen_hosei: physZokuzenHosei,
         keitou_hosei: keitouHosei,
         additional_mag: addMag,
         kouryu_mag: kouryuMag,
@@ -328,7 +389,7 @@ export const TwoPan: React.FC = () => {
         kouma_hosei: koumaHosei,
         resist,
         zokusei_tai_hosei: isHeal ? 0 : zokuseiTaiHosei,
-        additional_mag: 1,
+        additional_mag: defForce === 'ドルマ' && zokusei === 18 ? 0.8 : 1,
         zokusei_hosei: zokuseiHosei,
         zokuzen_hosei: zokuzenHosei,
         keitou_hosei: keitouHosei,
@@ -369,12 +430,12 @@ export const TwoPan: React.FC = () => {
   const resA = calculateDamageForAttacker(
     atkAStatus, atkASkillType, atkASkillName, 
     kougekiHoseiA, koumaHoseiA, baikiHoseiA, zokuseiHoseiA, zokuzenHoseiA, keitouHoseiA, kouryuMagA, atkAForce,
-    parseSelectVal(atkAKiyousa), atkABousou
+    parseSelectVal(atkAKiyousa), atkABousou, taiA
   );
   const resB = calculateDamageForAttacker(
     atkBStatus, atkBSkillType, atkBSkillName, 
     kougekiHoseiB, koumaHoseiB, baikiHoseiB, zokuseiHoseiB, zokuzenHoseiB, keitouHoseiB, kouryuMagB, atkBForce,
-    parseSelectVal(atkBKiyousa), atkBBousou
+    parseSelectVal(atkBKiyousa), atkBBousou, taiB
   );
 
   // 合計ダメージと判定
@@ -464,11 +525,16 @@ export const TwoPan: React.FC = () => {
     if (defAdditionalHPText !== '0') list.push(`HP+${defAdditionalHPText}`);
     if (defSyubi !== '0') list.push(`守備+${defSyubi}`);
     if (defSkalaText !== '0') list.push(`スカラ:${defSkalaText > '0' ? '+' : ''}${defSkalaText}`);
-    if (defZokuseiTai !== '0') list.push(`属耐+${defZokuseiTai}%`);
-    if (defKeitouTai !== '0') list.push(`系耐+${defKeitouTai}%`);
-    if (defZantai !== '0') list.push(`斬体耐+${defZantai}%`);
-    if (defJumon !== '0') list.push(`呪耐+${defJumon}%`);
-    if (defBreath !== '0') list.push(`ブ耐+${defBreath}%`);
+    if (defForce !== '-') list.push(`F:${defForce}`);
+    const taiSummary = (p: string, z: string, k: string, s: string, j: string, b: string) => {
+      if (z !== '0') list.push(`${p}属耐+${z}%`);
+      if (k !== '0') list.push(`${p}系耐+${k}%`);
+      if (s !== '0') list.push(`${p}斬体耐+${s}%`);
+      if (j !== '0') list.push(`${p}呪耐+${j}%`);
+      if (b !== '0') list.push(`${p}ブ耐+${b}%`);
+    };
+    taiSummary('対A:', defZokuseiTaiA, defKeitouTaiA, defZantaiA, defJumonA, defBreathA);
+    taiSummary('対B:', defZokuseiTaiB, defKeitouTaiB, defZantaiB, defJumonB, defBreathB);
     return list.length > 0 ? list.join(', ') : '';
   };
 
@@ -509,11 +575,17 @@ export const TwoPan: React.FC = () => {
     defSkalaText,
     defAdditionalHPText,
     defSyubi,
-    defZokuseiTai,
-    defKeitouTai,
-    defZantai,
-    defJumon,
-    defBreath,
+    defForce,
+    defZokuseiTaiA,
+    defKeitouTaiA,
+    defZantaiA,
+    defJumonA,
+    defBreathA,
+    defZokuseiTaiB,
+    defKeitouTaiB,
+    defZantaiB,
+    defJumonB,
+    defBreathB,
     atkAStepFilter,
     atkBStepFilter,
     defStepFilter,
@@ -559,11 +631,23 @@ export const TwoPan: React.FC = () => {
     if (data.defSkalaText !== undefined) setDefSkalaText(data.defSkalaText);
     if (data.defAdditionalHPText !== undefined) setDefAdditionalHPText(data.defAdditionalHPText);
     if (data.defSyubi !== undefined) setDefSyubi(data.defSyubi);
-    if (data.defZokuseiTai !== undefined) setDefZokuseiTai(data.defZokuseiTai);
-    if (data.defKeitouTai !== undefined) setDefKeitouTai(data.defKeitouTai);
-    if (data.defZantai !== undefined) setDefZantai(data.defZantai);
-    if (data.defJumon !== undefined) setDefJumon(data.defJumon);
-    if (data.defBreath !== undefined) setDefBreath(data.defBreath);
+    if (data.defForce !== undefined) setDefForce(data.defForce);
+    // 旧プリセット (共通耐性) は A/B 両方に適用
+    if (data.defZokuseiTai !== undefined) { setDefZokuseiTaiA(data.defZokuseiTai); setDefZokuseiTaiB(data.defZokuseiTai); }
+    if (data.defKeitouTai !== undefined) { setDefKeitouTaiA(data.defKeitouTai); setDefKeitouTaiB(data.defKeitouTai); }
+    if (data.defZantai !== undefined) { setDefZantaiA(data.defZantai); setDefZantaiB(data.defZantai); }
+    if (data.defJumon !== undefined) { setDefJumonA(data.defJumon); setDefJumonB(data.defJumon); }
+    if (data.defBreath !== undefined) { setDefBreathA(data.defBreath); setDefBreathB(data.defBreath); }
+    if (data.defZokuseiTaiA !== undefined) setDefZokuseiTaiA(data.defZokuseiTaiA);
+    if (data.defKeitouTaiA !== undefined) setDefKeitouTaiA(data.defKeitouTaiA);
+    if (data.defZantaiA !== undefined) setDefZantaiA(data.defZantaiA);
+    if (data.defJumonA !== undefined) setDefJumonA(data.defJumonA);
+    if (data.defBreathA !== undefined) setDefBreathA(data.defBreathA);
+    if (data.defZokuseiTaiB !== undefined) setDefZokuseiTaiB(data.defZokuseiTaiB);
+    if (data.defKeitouTaiB !== undefined) setDefKeitouTaiB(data.defKeitouTaiB);
+    if (data.defZantaiB !== undefined) setDefZantaiB(data.defZantaiB);
+    if (data.defJumonB !== undefined) setDefJumonB(data.defJumonB);
+    if (data.defBreathB !== undefined) setDefBreathB(data.defBreathB);
     if (data.atkAStepFilter !== undefined) setAtkAStepFilter(data.atkAStepFilter);
     if (data.atkBStepFilter !== undefined) setAtkBStepFilter(data.atkBStepFilter);
     if (data.defStepFilter !== undefined) setDefStepFilter(data.defStepFilter);
@@ -1178,50 +1262,53 @@ export const TwoPan: React.FC = () => {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>属性耐性%</label>
+                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>フォース（敵）</label>
                   <Dropdown 
-                    options={['0', '3', '4(D)', '5', '6', '7', '8(C)', '9', '10', '12', '13(B)', '14', '16', '20(A)', '23', '24', '26', '27', '29', '30(S)', '32', '33', '34', '36', '37', '38', '40', '43', '44', '46', '48', '50', '54', '60']} 
-                    value={defZokuseiTai} 
-                    onChange={setDefZokuseiTai} 
+                    options={['-', 'ドルマ']} 
+                    value={defForce} 
+                    onChange={setDefForce} 
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>系統耐性%</label>
-                  <Dropdown 
-                    options={['0', '3(D)', '6(C)', '9', '10(B)', '12', '13', '14(A)', '16', '20(S)', '21', '22', '25', '29', '30', '32', '35', '37', '42', '47', '50', '55', '57', '60', '65', '67', '75', '85', '95', '100', '105', '107', '110', '112', '114', '115', '117', '122', '125', '127', '130', '132', '135', '140', '142', '145', '150', '155', '157', '160', '165', '170', '175', '185', '200']} 
-                    value={defKeitouTai} 
-                    onChange={setDefKeitouTai} 
-                  />
+              {/* 耐性 (アタッカー別) */}
+              <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h4 style={{ fontSize: '0.95rem', color: 'var(--accent-red)' }}>耐性（アタッカー別）</h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDefZokuseiTaiB(defZokuseiTaiA);
+                      setDefKeitouTaiB(defKeitouTaiA);
+                      setDefZantaiB(defZantaiA);
+                      setDefJumonB(defJumonA);
+                      setDefBreathB(defBreathA);
+                    }}
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(0,0,0,0.15)', color: 'var(--text-secondary)', padding: '3px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}
+                  >A → B にコピー</button>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>斬体耐%</label>
-                  <Dropdown 
-                    options={['0', '2(D)', '4(C)', '6', '7(B)', '8', '9', '10(A)', '12', '14', '15(S)', '16', '17', '18', '19', '22', '24', '25', '27', '30', '32', '34', '37', '40', '45', '46', '47', '48', '49', '50', '52', '55', '60']} 
-                    value={defZantai} 
-                    onChange={setDefZantai} 
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>呪文耐%</label>
-                  <Dropdown 
-                    options={['0', '2(D)', '4(C)', '6', '7(B)', '8', '9', '10(A)', '12', '14', '15(S)', '16', '17', '18', '19', '22', '24', '25', '27', '30', '32', '34', '37', '40', '45', '46', '47', '48', '49', '50', '52', '55', '60']} 
-                    value={defJumon} 
-                    onChange={setDefJumon} 
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>ブレス耐%</label>
-                  <Dropdown 
-                    options={['0', '2(D)', '4(C)', '6', '7(B)', '8', '9', '10(A)', '12', '14', '15(S)', '16', '17', '18', '19', '22', '24', '25', '27', '30', '32', '34', '37', '40', '45', '46', '47', '48', '49', '50', '52', '55', '60']} 
-                    value={defBreath} 
-                    onChange={setDefBreath} 
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr 1fr', gap: '6px 8px', alignItems: 'center' }}>
+                  <div />
+                  <div style={{ textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--accent-blue)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>対A ({atkAName})</div>
+                  <div style={{ textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--accent-blue)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>対B ({atkBName})</div>
+                  {([
+                    { label: '属性耐性%', a: defZokuseiTaiA, setA: setDefZokuseiTaiA, b: defZokuseiTaiB, setB: setDefZokuseiTaiB,
+                      options: ['0', '3', '4(D)', '5', '6', '7', '8(C)', '9', '10', '12', '13(B)', '14', '16', '20(A)', '23', '24', '26', '27', '29', '30(S)', '32', '33', '34', '36', '37', '38', '40', '43', '44', '46', '48', '50', '54', '60'] },
+                    { label: '系統耐性%', a: defKeitouTaiA, setA: setDefKeitouTaiA, b: defKeitouTaiB, setB: setDefKeitouTaiB,
+                      options: ['0', '3(D)', '6(C)', '9', '10(B)', '12', '13', '14(A)', '16', '20(S)', '21', '22', '25', '29', '30', '32', '35', '37', '42', '47', '50', '55', '57', '60', '65', '67', '75', '85', '95', '100', '105', '107', '110', '112', '114', '115', '117', '122', '125', '127', '130', '132', '135', '140', '142', '145', '150', '155', '157', '160', '165', '170', '175', '185', '200'] },
+                    { label: '斬体耐%', a: defZantaiA, setA: setDefZantaiA, b: defZantaiB, setB: setDefZantaiB,
+                      options: ['0', '2(D)', '4(C)', '6', '7(B)', '8', '9', '10(A)', '12', '14', '15(S)', '16', '17', '18', '19', '22', '24', '25', '27', '30', '32', '34', '37', '40', '45', '46', '47', '48', '49', '50', '52', '55', '60'] },
+                    { label: '呪文耐%', a: defJumonA, setA: setDefJumonA, b: defJumonB, setB: setDefJumonB,
+                      options: ['0', '2(D)', '4(C)', '6', '7(B)', '8', '9', '10(A)', '12', '14', '15(S)', '16', '17', '18', '19', '22', '24', '25', '27', '30', '32', '34', '37', '40', '45', '46', '47', '48', '49', '50', '52', '55', '60'] },
+                    { label: 'ブレス耐%', a: defBreathA, setA: setDefBreathA, b: defBreathB, setB: setDefBreathB,
+                      options: ['0', '2(D)', '4(C)', '6', '7(B)', '8', '9', '10(A)', '12', '14', '15(S)', '16', '17', '18', '19', '22', '24', '25', '27', '30', '32', '34', '37', '40', '45', '46', '47', '48', '49', '50', '52', '55', '60'] },
+                  ]).map(row => (
+                    <React.Fragment key={row.label}>
+                      <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{row.label}</label>
+                      <Dropdown options={row.options} value={row.a} onChange={row.setA} />
+                      <Dropdown options={row.options} value={row.b} onChange={row.setB} />
+                    </React.Fragment>
+                  ))}
                 </div>
               </div>
             </div>
