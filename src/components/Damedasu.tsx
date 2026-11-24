@@ -3,6 +3,7 @@ import { monsterMap } from '../data/monsters';
 import { AttributeBadge } from './AttributeBadge';
 import { savePreset } from '../utils/presetManager';
 import { PresetModal } from './PresetModal';
+import { SummaryItems } from './SummaryItems';
 import { 
   monsterList, 
   skillZenList, 
@@ -552,9 +553,9 @@ export const Damedasu: React.FC = () => {
                   color: '#e28700',
                   letterSpacing: '0.02em',
                   whiteSpace: 'normal',
-                  wordBreak: 'break-all'
+                  wordBreak: 'normal'
                 }}>
-                  {getAtkHoseiSummary()}
+                  <SummaryItems text={getAtkHoseiSummary()} />
                 </span>
               )}
             </h3>
@@ -732,9 +733,9 @@ export const Damedasu: React.FC = () => {
                   color: '#e28700',
                   letterSpacing: '0.02em',
                   whiteSpace: 'normal',
-                  wordBreak: 'break-all'
+                  wordBreak: 'normal'
                 }}>
-                  {getDefHoseiSummary()}
+                  <SummaryItems text={getDefHoseiSummary()} />
                 </span>
               )}
             </h3>

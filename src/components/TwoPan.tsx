@@ -17,6 +17,7 @@ import type { Monster } from '../types';
 import { Dropdown } from './Dropdown';
 import { savePreset } from '../utils/presetManager';
 import { PresetModal } from './PresetModal';
+import { SummaryItems } from './SummaryItems';
 
 // 各モンスターの所属する歩族を判定する関数
 const getMonsterStepFamily = (name: string): string => {
@@ -780,9 +781,9 @@ export const TwoPan: React.FC = () => {
                   color: '#e28700',
                   letterSpacing: '0.02em',
                   whiteSpace: 'normal',
-                  wordBreak: 'break-all'
+                  wordBreak: 'normal'
                 }}>
-                  {getAtkAHoseiSummary()}
+                  <SummaryItems text={getAtkAHoseiSummary()} />
                 </span>
               )}
             </h3>
@@ -983,9 +984,9 @@ export const TwoPan: React.FC = () => {
                   color: '#e28700',
                   letterSpacing: '0.02em',
                   whiteSpace: 'normal',
-                  wordBreak: 'break-all'
+                  wordBreak: 'normal'
                 }}>
-                  {getAtkBHoseiSummary()}
+                  <SummaryItems text={getAtkBHoseiSummary()} />
                 </span>
               )}
             </h3>
@@ -1186,9 +1187,9 @@ export const TwoPan: React.FC = () => {
                   color: '#e28700',
                   letterSpacing: '0.02em',
                   whiteSpace: 'normal',
-                  wordBreak: 'break-all'
+                  wordBreak: 'normal'
                 }}>
-                  {getDefHoseiSummary()}
+                  <SummaryItems text={getDefHoseiSummary()} />
                 </span>
               )}
             </h3>
