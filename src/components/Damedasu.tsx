@@ -851,7 +851,7 @@ export const Damedasu: React.FC = () => {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <div style={{ flex: 1 }}>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>しゅび力</label>
-                        <Dropdown options={['0', '4', '7(D)', '8', '12', '13', '15(C)', '17', '20', '21', '24', '25(B)', '26', '28', '30', '33', '34', '35(A)', '38', '39', '40', '43', '45', '48', '50(S)', '53', '58', '60', '63', '64', '68', '70', '73', '80', '90', '93', '94', '98', '100', '103', '110', '120']} value={defSyubi} onChange={setDefSyubi} />
+                        <Dropdown options={['0', '4', '7(D)', '8', '12', '13', '14', '15(C)', '17', '20', '21', '22', '24', '25(B)', '26', '28', '29', '30', '32', '33', '34', '35(A)', '37', '38', '39', '40', '42', '43', '45', '47', '48', '50(S)', '53', '55', '57', '58', '60', '63', '64', '65', '67', '68', '70', '73', '75', '80', '85', '90', '93', '94', '95', '98', '100', '103', '105', '107', '110', '112', '114', '115', '117', '120', '122', '125', '127', '130', '132', '135', '140', '142', '145', '150', '155', '157', '160', '165', '170', '175', '185', '200']} value={defSyubi} onChange={setDefSyubi} />
                       </div>
                       <div style={{ flex: 1 }}>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>スカラ</label>
@@ -862,7 +862,7 @@ export const Damedasu: React.FC = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>属性耐性%</label>
-                        <Dropdown options={['0', '3', '4(D)', '5', '6', '7', '8(C)', '9', '10', '12', '13(B)', '14', '16', '20(A)', '23', '24', '26', '27', '29', '30(S)', '32', '33', '34', '36', '37', '38', '40', '43', '44', '46', '48', '50', '54', '60']} value={defZokuseiTai} onChange={setDefZokuseiTai} />
+                        <Dropdown options={['0', '3', '4(D)', '5', '6', '7', '8(C)', '9', '10', '12', '13(B)', '14', '16', '17', '20(A)', '21', '23', '24', '26', '27', '28', '29', '30(S)', '32', '33', '34', '35', '36', '37', '38', '39', '40', '43', '44', '45', '46', '48', '50', '53', '54', '58', '60', '63', '64', '68', '70', '73', '80', '90', '93', '94', '98', '100', '103', '110', '120']} value={defZokuseiTai} onChange={setDefZokuseiTai} />
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>系統耐性%</label>
