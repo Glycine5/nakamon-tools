@@ -381,44 +381,33 @@ export const Damedasu: React.FC = () => {
     return resultVal <= 0 ? '-' : resultVal;
   };
 
-  const getResSummary = () => {
-    const list: string[] = [];
-    if (skillZenPhys !== '全体物理') {
-      const minVal = renderHPText(zenPhysResult.min, skillZenPhys, '全体物理');
-      const avgVal = renderHPText(zenPhysResult.damage, skillZenPhys, '全体物理');
-      const maxVal = renderHPText(zenPhysResult.max, skillZenPhys, '全体物理');
-      list.push(`${skillZenPhys}:${minVal}〜${maxVal}(${avgVal})`);
-    }
-    if (skillTanPhys !== '単体物理') {
-      const minVal = renderHPText(tanPhysResult.min, skillTanPhys, '単体物理');
-      const avgVal = renderHPText(tanPhysResult.damage, skillTanPhys, '単体物理');
-      const maxVal = renderHPText(tanPhysResult.max, skillTanPhys, '単体物理');
-      list.push(`${skillTanPhys}:${minVal}〜${maxVal}(${avgVal})`);
-    }
-    if (skillZenJumon !== '全体・呪文ブレス') {
-      const minVal = renderHPText(zenJumonResult.min, skillZenJumon, '全体・呪文ブレス');
-      const avgVal = renderHPText(zenJumonResult.damage, skillZenJumon, '全体・呪文ブレス');
-      const maxVal = renderHPText(zenJumonResult.max, skillZenJumon, '全体・呪文ブレス');
-      list.push(`${skillZenJumon}:${minVal}〜${maxVal}(${avgVal})`);
-    }
-    if (skillTanJumon !== '単体・呪文ブレス') {
-      const minVal = renderHPText(tanJumonResult.min, skillTanJumon, '単体・呪文ブレス');
-      const avgVal = renderHPText(tanJumonResult.damage, skillTanJumon, '単体・呪文ブレス');
-      const maxVal = renderHPText(tanJumonResult.max, skillTanJumon, '単体・呪文ブレス');
-      list.push(`${skillTanJumon}:${minVal}〜${maxVal}(${avgVal})`);
-    }
+  // 折りたたみ時のダメージ一覧 (1スキル1行で表示する)
+  type ResSummaryRow = { name: string; min: string | number; max: string | number; avg: string | number };
+  const getResSummary = (): { rows: ResSummaryRow[]; opts: string[] } | null => {
+    const rows: ResSummaryRow[] = [];
+    const addRow = (skillName: string, defaultName: string, result: { min: number; damage: number; max: number }) => {
+      if (skillName === defaultName) return;
+      rows.push({
+        name: skillName,
+        min: renderHPText(result.min, skillName, defaultName),
+        max: renderHPText(result.max, skillName, defaultName),
+        avg: renderHPText(result.damage, skillName, defaultName),
+      });
+    };
+    addRow(skillZenPhys, '全体物理', zenPhysResult);
+    addRow(skillTanPhys, '単体物理', tanPhysResult);
+    addRow(skillZenJumon, '全体・呪文ブレス', zenJumonResult);
+    addRow(skillTanJumon, '単体・呪文ブレス', tanJumonResult);
 
     const opts: string[] = [];
     if (isBousou) opts.push('会心ON');
     if (remHPMode) opts.push('残りHP');
 
-    const skillPart = list.length > 0 ? list.join(' / ') : '';
-    const optsPart = opts.length > 0 ? `(${opts.join(', ')})` : '';
-
-    if (skillPart && optsPart) return `${skillPart} ${optsPart}`;
-    return skillPart || optsPart || '';
+    return rows.length > 0 || opts.length > 0 ? { rows, opts } : null;
   };
 
+
+  const resSummary = getResSummary();
 
   const getCurrentPresetData = () => ({
     resOpen,
@@ -907,22 +896,37 @@ export const Damedasu: React.FC = () => {
           <div className="collapsible-header" onClick={() => setResOpen(!resOpen)}>
             <h3 style={{ color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               📊 スキル選択＆ダメージ表示
-              {!resOpen && getResSummary() && (
-                <span style={{
-                  display: 'inline-block',
+              {!resOpen && resSummary && (
+                <div style={{
+                  flexBasis: '100%',
                   background: 'linear-gradient(135deg, rgba(27, 42, 75, 0.12), rgba(27, 42, 75, 0.05))',
                   border: '1px solid rgba(27, 42, 75, 0.25)',
-                  borderRadius: '20px',
-                  padding: '2px 12px',
+                  borderRadius: '12px',
+                  padding: '6px 12px',
                   fontSize: '0.87rem',
                   fontWeight: 600,
                   color: 'var(--text-primary)',
-                  letterSpacing: '0.02em',
-                  whiteSpace: 'normal',
-                  wordBreak: 'break-all'
+                  lineHeight: 1.5
                 }}>
-                  {getResSummary()}
-                </span>
+                  {resSummary.rows.length > 0 && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', columnGap: '12px', rowGap: '2px' }}>
+                      {resSummary.rows.map((row) => (
+                        <React.Fragment key={row.name}>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.name}</span>
+                          <span style={{ whiteSpace: 'nowrap', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                            {row.min}〜{row.max}
+                            <span style={{ color: 'var(--text-muted)', fontWeight: 500, marginLeft: '4px' }}>({row.avg})</span>
+                          </span>
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  )}
+                  {resSummary.opts.length > 0 && (
+                    <div style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)', marginTop: resSummary.rows.length > 0 ? '2px' : 0 }}>
+                      {resSummary.opts.join(' / ')}
+                    </div>
+                  )}
+                </div>
               )}
             </h3>
             <span style={{ color: 'var(--text-muted)' }}>{resOpen ? '▲' : '▼'}</span>
