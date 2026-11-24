@@ -99,6 +99,7 @@ export const TwoPan: React.FC = () => {
   const [defSyubi, setDefSyubi] = useState<string>(() => localStorage.getItem('dqw_two_defSyubi') || '0');
   // 敵側フォース (main.py: force_two_2)。ドルマならドルマ属性攻撃を 0.8 倍
   const [defForce, setDefForce] = useState<string>(() => localStorage.getItem('dqw_two_defForce') || '-');
+  const [defBreak, setDefBreak] = useState<string>(() => localStorage.getItem('dqw_two_defBreak') || '-');
   // 耐性系はアタッカーごとに個別設定 (main.py: *_two がA用, *_two_3 がB用)
   // 旧バージョンの共通キー (dqw_two_defZokuseiTai 等) があれば初期値として引き継ぐ
   const loadTai = (key: string, suffix: 'A' | 'B') =>
@@ -211,6 +212,7 @@ export const TwoPan: React.FC = () => {
     localStorage.setItem('dqw_two_defAdditionalHPText', defAdditionalHPText);
     localStorage.setItem('dqw_two_defSyubi', defSyubi);
     localStorage.setItem('dqw_two_defForce', defForce);
+    localStorage.setItem('dqw_two_defBreak', defBreak);
     localStorage.setItem('dqw_two_defZokuseiTaiA', defZokuseiTaiA);
     localStorage.setItem('dqw_two_defKeitouTaiA', defKeitouTaiA);
     localStorage.setItem('dqw_two_defZantaiA', defZantaiA);
@@ -224,7 +226,7 @@ export const TwoPan: React.FC = () => {
   }, [
     atkAName, atkAPers, atkAQual, atkASkillType, atkASkillName, atkABaiki, atkAForce, atkAKougeki, atkAKouma, atkAKiyousa, atkAZokusei, atkAZokuzen, atkAKeitou, atkAKouryu, atkABousou,
     atkBName, atkBPers, atkBQual, atkBSkillType, atkBSkillName, atkBBaiki, atkBForce, atkBKougeki, atkBKouma, atkBKiyousa, atkBZokusei, atkBZokuzen, atkBKeitou, atkBKouryu, atkBBousou,
-    defName, defPers, defQual, defSkalaText, defAdditionalHPText, defSyubi, defForce,
+    defName, defPers, defQual, defSkalaText, defAdditionalHPText, defSyubi, defForce, defBreak,
     defZokuseiTaiA, defKeitouTaiA, defZantaiA, defJumonA, defBreathA,
     defZokuseiTaiB, defKeitouTaiB, defZantaiB, defJumonB, defBreathB
   ]);
@@ -297,6 +299,10 @@ export const TwoPan: React.FC = () => {
     breath: parseSelectVal(defBreathB),
   };
 
+  // ザバブレイク: ターゲットのザバ弱点・耐性倍率を1.3倍する
+  const applyZabaBreak = (resist: number, zokusei: number) =>
+    defBreak === 'ザバ' && zokusei === 37 ? resist * 1.3 : resist;
+
   // --- ダメージ算出関数 ---
   const calculateDamageForAttacker = (
     status: Monster,
@@ -333,7 +339,7 @@ export const TwoPan: React.FC = () => {
       const zokusei = isForceDolma ? 18 : (skillData.skill.raw[6] as number);
       const physZokuseiHosei = isForceDolma ? zokuseiHosei / 2 : zokuseiHosei;
       const physZokuzenHosei = isForceDolma ? zokuzenHosei / 2 : zokuzenHosei;
-      const resist = defStatus.raw ? (defStatus.raw[zokusei] as number) : 1;
+      const resist = applyZabaBreak(defStatus.raw ? (defStatus.raw[zokusei] as number) : 1, zokusei);
       // 敵側ドルマフォース: ドルマ属性攻撃を 0.8 倍
       const addMag = defForce === 'ドルマ' && zokusei === 18 ? 0.8 : 1;
       
@@ -372,7 +378,7 @@ export const TwoPan: React.FC = () => {
       const skillData = isZen ? getJumonSkill(skillName) : getBreathSkill(skillName);
       const zokusei = skillData.raw[6] as number;
       const isHeal = zokusei === 19;
-      const resist = isHeal ? 1 : (defStatus.raw ? (defStatus.raw[zokusei] as number) : 1);
+      const resist = isHeal ? 1 : applyZabaBreak(defStatus.raw ? (defStatus.raw[zokusei] as number) : 1, zokusei);
       const isBreath = skillData.raw[5] === 2;
 
       let currentMagicOrHeal = isHeal ? status.heal : status.magic;
@@ -526,6 +532,7 @@ export const TwoPan: React.FC = () => {
     if (defSyubi !== '0') list.push(`守備+${defSyubi}`);
     if (defSkalaText !== '0') list.push(`スカラ:${defSkalaText > '0' ? '+' : ''}${defSkalaText}`);
     if (defForce !== '-') list.push(`F:${defForce}`);
+    if (defBreak !== '-') list.push(`B:${defBreak}`);
     const taiSummary = (p: string, z: string, k: string, s: string, j: string, b: string) => {
       if (z !== '0') list.push(`${p}属耐+${z}%`);
       if (k !== '0') list.push(`${p}系耐+${k}%`);
@@ -576,6 +583,7 @@ export const TwoPan: React.FC = () => {
     defAdditionalHPText,
     defSyubi,
     defForce,
+    defBreak,
     defZokuseiTaiA,
     defKeitouTaiA,
     defZantaiA,
@@ -632,6 +640,7 @@ export const TwoPan: React.FC = () => {
     if (data.defAdditionalHPText !== undefined) setDefAdditionalHPText(data.defAdditionalHPText);
     if (data.defSyubi !== undefined) setDefSyubi(data.defSyubi);
     if (data.defForce !== undefined) setDefForce(data.defForce);
+    if (data.defBreak !== undefined) setDefBreak(data.defBreak);
     // 旧プリセット (共通耐性) は A/B 両方に適用
     if (data.defZokuseiTai !== undefined) { setDefZokuseiTaiA(data.defZokuseiTai); setDefZokuseiTaiB(data.defZokuseiTai); }
     if (data.defKeitouTai !== undefined) { setDefKeitouTaiA(data.defKeitouTai); setDefKeitouTaiB(data.defKeitouTai); }
@@ -1267,6 +1276,14 @@ export const TwoPan: React.FC = () => {
                     options={['-', 'ドルマ']} 
                     value={defForce} 
                     onChange={setDefForce} 
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>ブレイク</label>
+                  <Dropdown
+                    options={['-', 'ザバ']}
+                    value={defBreak}
+                    onChange={setDefBreak}
                   />
                 </div>
               </div>

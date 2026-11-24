@@ -63,6 +63,7 @@ export const Damedasu: React.FC = () => {
   const [defBreath, setDefBreath] = useState<string>(() => localStorage.getItem('dqw_dam_defBreath') || '0');
   const [defSkalaText, setDefSkalaText] = useState<string>(() => localStorage.getItem('dqw_dam_defSkalaText') || '0');
   const [defForce, setDefForce] = useState<string>(() => localStorage.getItem('dqw_dam_defForce') || '-');
+  const [defBreak, setDefBreak] = useState<string>(() => localStorage.getItem('dqw_dam_defBreak') || '-');
   const [remHPMode, setRemHPMode] = useState<boolean>(() => localStorage.getItem('dqw_dam_remHPMode') === 'true');
 
   // スキル選択
@@ -137,6 +138,7 @@ export const Damedasu: React.FC = () => {
     localStorage.setItem('dqw_dam_defBreath', defBreath);
     localStorage.setItem('dqw_dam_defSkalaText', defSkalaText);
     localStorage.setItem('dqw_dam_defForce', defForce);
+    localStorage.setItem('dqw_dam_defBreak', defBreak);
     localStorage.setItem('dqw_dam_remHPMode', String(remHPMode));
 
     localStorage.setItem('dqw_dam_skillZenPhys', skillZenPhys);
@@ -145,7 +147,7 @@ export const Damedasu: React.FC = () => {
     localStorage.setItem('dqw_dam_skillTanJumon', skillTanJumon);
   }, [
     atkMonsterName, atkPersonality, atkQuality, atkZokusei, atkZokuzen, atkKeitou, atkKougeki, atkKouma, atkKiyousa, atkBaikiText, atkKouryu, atkForce, isBousou,
-    defMonsterName, defPersonality, defQuality, defZokuseiTai, defKeitouTai, defSyubi, defZantai, defJumon, defBreath, defSkalaText, defForce, remHPMode,
+    defMonsterName, defPersonality, defQuality, defZokuseiTai, defKeitouTai, defSyubi, defZantai, defJumon, defBreath, defSkalaText, defForce, defBreak, remHPMode,
     skillZenPhys, skillTanPhys, skillZenJumon, skillTanJumon
   ]);
 
@@ -197,8 +199,12 @@ export const Damedasu: React.FC = () => {
 
   // 1. 全体物理
   const zenPhysSkillData = getZenPhysicalSkill(skillZenPhys, defFinalStatus.family);
+  // ザバブレイク: ターゲットのザバ弱点・耐性倍率を1.3倍する
+  const applyZabaBreak = (resist: number, zokusei: number) =>
+    defBreak === 'ザバ' && zokusei === 37 ? resist * 1.3 : resist;
+
   const zenPhysZokusei = (atkForce === 'ドルマ' || defForce === 'ドルマ') && zenPhysSkillData.skill.raw[6] === 10 ? 18 : (zenPhysSkillData.skill.raw[6] as number);
-  const zenPhysResist = defFinalStatus.raw ? (defFinalStatus.raw[zenPhysZokusei] as number) : 1;
+  const zenPhysResist = applyZabaBreak(defFinalStatus.raw ? (defFinalStatus.raw[zenPhysZokusei] as number) : 1, zenPhysZokusei);
   const zenPhysAddMag = (atkForce === 'ドルマ' || defForce === 'ドルマ') && zenPhysZokusei === 18 ? 0.8 : 1;
   
   let zenPhysPower = atkFinalStatus.power;
@@ -232,7 +238,7 @@ export const Damedasu: React.FC = () => {
   // 2. 単体物理
   const tanPhysSkillData = getTanPhysicalSkill(skillTanPhys, defFinalStatus.family);
   const tanPhysZokusei = (atkForce === 'ドルマ' || defForce === 'ドルマ') && tanPhysSkillData.skill.raw[6] === 10 ? 18 : (tanPhysSkillData.skill.raw[6] as number);
-  const tanPhysResist = defFinalStatus.raw ? (defFinalStatus.raw[tanPhysZokusei] as number) : 1;
+  const tanPhysResist = applyZabaBreak(defFinalStatus.raw ? (defFinalStatus.raw[tanPhysZokusei] as number) : 1, tanPhysZokusei);
   const tanPhysAddMag = (atkForce === 'ドルマ' || defForce === 'ドルマ') && tanPhysZokusei === 18 ? 0.8 : 1;
   
   let tanPhysPower = atkFinalStatus.power;
@@ -280,7 +286,7 @@ export const Damedasu: React.FC = () => {
     zenMagicOrHeal = Math.floor(currentPower * (1 + 0.2 * baikiHosei)) + currentDex;
   }
 
-  const zenJumonResist = isZenHeal ? 1 : (defFinalStatus.raw ? (defFinalStatus.raw[zenJumonZokusei] as number) : 1);
+  const zenJumonResist = isZenHeal ? 1 : applyZabaBreak(defFinalStatus.raw ? (defFinalStatus.raw[zenJumonZokusei] as number) : 1, zenJumonZokusei);
   const zenJumonResult = calcJumonBreathDamage({
     skill: zenJumonSkill,
     magicOrHeal: zenMagicOrHeal,
@@ -313,7 +319,7 @@ export const Damedasu: React.FC = () => {
     tanMagicOrHeal = Math.floor(currentPower * (1 + 0.2 * baikiHosei)) + currentDex;
   }
 
-  const tanJumonResist = isTanHeal ? 1 : (defFinalStatus.raw ? (defFinalStatus.raw[tanJumonZokusei] as number) : 1);
+  const tanJumonResist = isTanHeal ? 1 : applyZabaBreak(defFinalStatus.raw ? (defFinalStatus.raw[tanJumonZokusei] as number) : 1, tanJumonZokusei);
   const tanJumonResult = calcJumonBreathDamage({
     skill: tanJumonSkill,
     magicOrHeal: tanMagicOrHeal,
@@ -359,6 +365,7 @@ export const Damedasu: React.FC = () => {
     if (defJumon !== '0') list.push(`呪耐+${defJumon}%`);
     if (defBreath !== '0') list.push(`ブ耐+${defBreath}%`);
     if (defForce !== '-') list.push(`F:${defForce}`);
+    if (defBreak !== '-') list.push(`B:${defBreak}`);
     return list.length > 0 ? list.join(', ') : '';
   };
 
@@ -441,6 +448,7 @@ export const Damedasu: React.FC = () => {
     defBreath,
     defSkalaText,
     defForce,
+    defBreak,
     remHPMode,
     skillZenPhys,
     skillTanPhys,
@@ -480,6 +488,7 @@ export const Damedasu: React.FC = () => {
     if (data.defBreath !== undefined) setDefBreath(data.defBreath);
     if (data.defSkalaText !== undefined) setDefSkalaText(data.defSkalaText);
     if (data.defForce !== undefined) setDefForce(data.defForce);
+    if (data.defBreak !== undefined) setDefBreak(data.defBreak);
     if (data.remHPMode !== undefined) setRemHPMode(data.remHPMode);
     if (data.skillZenPhys !== undefined) setSkillZenPhys(data.skillZenPhys);
     if (data.skillTanPhys !== undefined) setSkillTanPhys(data.skillTanPhys);
@@ -876,10 +885,14 @@ export const Damedasu: React.FC = () => {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', marginTop: '10px', marginBottom: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: '10px', marginBottom: '10px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>フォース</label>
                         <Dropdown options={['-', 'ドルマ']} value={defForce} onChange={setDefForce} />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>ブレイク</label>
+                        <Dropdown options={['-', 'ザバ']} value={defBreak} onChange={setDefBreak} />
                       </div>
                     </div>
                   </div>

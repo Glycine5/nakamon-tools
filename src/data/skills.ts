@@ -18,6 +18,7 @@ export const rawSkills: Record<string, Skill> = {
   dorumoa: { name: 'ドルモーア', raw: [15, 50, 1200, 940, 1, 1, 18, 28] },
   suigeki: { name: '蒼玉の水撃', raw: [15, 50, 1200, 940, 1, 1, 14, 28] },
   sennetu: { name: '閃熱の魔弾', raw: [15, 50, 1200, 940, 1, 1, 12, 28] },
+  zabaran: { name: 'ザバラーン', raw: [15, 50, 1200, 940, 1, 1, 37, 28] },
   iora: { name: 'イオラ', raw: [15, 20, 1200, 290, 2, 1, 13, 28] },
   hyadaruko: { name: 'ヒャダルコ', raw: [15, 20, 1200, 290, 2, 1, 14, 28] },
   bagima: { name: 'バギマ', raw: [15, 20, 1200, 290, 2, 1, 15, 28] },
@@ -166,7 +167,7 @@ export const rawSkills: Record<string, Skill> = {
 
 // リスト類
 export const monsterList: string[] = [
-  'キラーマシン', 'ヘルバトラー', 'オーシャンボーン', 'スライムジェネラル', 'ホークブリザード', 'ホークブリザード49',
+  'キラーマシン', 'プチぼう', 'ヘルバトラー', 'オーシャンボーン', 'スライムジェネラル', 'ホークブリザード', 'ホークブリザード49',
   'りゅうおう', 'デスピサロ', 'バルボロス', 'デスタムーア', 'グレイナル', 'ネルゲル', 'ハーゴン', 'オルゴデミーラ', 'ラプソーン', 'レジェンドホース', 'やかんのまじん',
   'ギガンテス', 'まおうのつかい', 'メイデンドール', 'メイデンドール49', 'ヘルバオム', 'アラグネ', 'ジュリアンテ', 'わかめおうじ', 'うごくせきぞう', 'きとうし', 'アームライオン', 'ジャミラス',
   'バトルレックス', 'キングスライム', 'ボーンナイト', 'スカイドラゴン',
@@ -223,7 +224,7 @@ export const jumonZenList: string[] = [
 ];
 
 export const jumonTanList: string[] = [
-  '単体・呪文ブレス', '閃熱の魔弾', 'イオマータ', 'イオマタx1', 'せいなるいかずち', '蒼玉の水撃',
+  '単体・呪文ブレス', '閃熱の魔弾', 'ザバラーン', 'イオマータ', 'イオマタx1', 'せいなるいかずち', '蒼玉の水撃',
   'ドルモーア', 'メラゾーマ', '雷光バズーカ', '暴風バズーカ', '火球バズーカ',
   '氷塊バズーカ', 'ドルクマ強', 'ライデイン', 'ソルフレア', 'ハッスル回', 'ドルクマ',
   'メラミ', 'デイン', 'ドルマ', 'ヒャド', 'ジバリカ', 'ベホイミ', 'ホイミ',
@@ -427,6 +428,7 @@ export function getBreathSkill(text: string): Skill {
     case '暴風バズー': case '暴風バズーカ': skillKey = 'bouhuu'; break;
     case '雷光バズー': case '雷光バズーカ': skillKey = 'raikobaz'; break;
     case 'いかずち': case 'せいなるいかずち': skillKey = 'ikazuti'; break;
+    case 'ザバラーン': skillKey = 'zabaran'; break;
     case 'イオマータ': skillKey = 'iomata'; break;
     case 'イオマatax1': case 'イオマタx1': skillKey = 'iomata_1'; break;
     case '蒼玉 of 水撃': case '蒼玉の水撃': skillKey = 'suigeki'; break;
