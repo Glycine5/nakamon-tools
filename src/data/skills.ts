@@ -167,9 +167,9 @@ export const rawSkills: Record<string, Skill> = {
 
 // リスト類
 export const monsterList: string[] = [
-  'キラーマシン', 'プチぼう', 'ヘルバトラー', 'オーシャンボーン', 'スライムジェネラル', 'ホークブリザード', 'ホークブリザード49',
-  'りゅうおう', 'デスピサロ', 'バルボロス', 'デスタムーア', 'グレイナル', 'ネルゲル', 'ハーゴン', 'オルゴデミーラ', 'ラプソーン', 'レジェンドホース', 'やかんのまじん',
-  'ギガンテス', 'まおうのつかい', 'メイデンドール', 'メイデンドール49', 'ヘルバオム', 'アラグネ', 'ジュリアンテ', 'わかめおうじ', 'うごくせきぞう', 'きとうし', 'アームライオン', 'ジャミラス',
+  'プチぼう', 'レジェンドホース', 'グレイナル', 'ネルゲル', 'オーシャンボーン', 'スライムジェネラル', 'ホークブリザード', 'ホークブリザード49',
+  'りゅうおう', 'デスピサロ', 'バルボロス', 'キラーマシン', 'ヘルバトラー', 'デスタムーア', 'ハーゴン', 'オルゴデミーラ', 'ラプソーン', 'やかんのまじん',
+  'ギガンテス', 'まおうのつかい', 'アラグネ', 'メイデンドール', 'メイデンドール49', 'ヘルバオム', 'ジュリアンテ', 'わかめおうじ', 'うごくせきぞう', 'きとうし', 'アームライオン', 'ジャミラス',
   'バトルレックス', 'キングスライム', 'ボーンナイト', 'スカイドラゴン',
   'シャドーサタン', 'ヘルクラウダー', 'テンタクルス', 'グレイトマーマン',
   'ゴーレム', 'ワイトキング', 'ダッシュラン', 'ガーゴイル', 'デビルアーマ', 'キラーパンサー', 'ハーゴンきし', 'ドラゴスライム', 'シルバーデビル',
@@ -459,9 +459,9 @@ export const getMonsterStepFamily = (name: string): string => {
   const idx = monsterList.indexOf(name);
   if (idx === -1) return 'その他';
 
-  const idxKillerMachine = monsterList.indexOf('キラーマシン');
+  const idxKillerMachine = monsterList.indexOf('プチぼう'); // 18k の先頭
   const idxMaou = monsterList.indexOf('まおうのつかい');
-  const idxMaiden = monsterList.indexOf('メイデンドール');
+  const idxMaiden = monsterList.indexOf('アラグネ'); // 13k の先頭
   const idxWight = monsterList.indexOf('ワイトキング');
   const idxDashlan = monsterList.indexOf('ダッシュラン');
   const idxGaniras = monsterList.indexOf('ガニラス');

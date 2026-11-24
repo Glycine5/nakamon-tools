@@ -23,9 +23,9 @@ const getMonsterStepFamily = (name: string): string => {
   const idx = monsterList.indexOf(name);
   if (idx === -1) return 'その他';
 
-  const idxKillerMachine = monsterList.indexOf('キラーマシン');
+  const idxKillerMachine = monsterList.indexOf('プチぼう'); // 18k の先頭
   const idxMaou = monsterList.indexOf('まおうのつかい');
-  const idxMaiden = monsterList.indexOf('メイデンドール');
+  const idxMaiden = monsterList.indexOf('アラグネ'); // 13k の先頭
   const idxWight = monsterList.indexOf('ワイトキング');
   const idxDashlan = monsterList.indexOf('ダッシュラン');
   const idxHellCondor = monsterList.indexOf('ヘルコンドル');
